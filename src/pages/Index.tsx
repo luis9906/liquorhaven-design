@@ -36,11 +36,16 @@ const Index = () => {
       <Hero />
       
       <div className="container mx-auto px-4 py-16">
-        <h2 className="text-4xl font-bold text-white mb-12">
-          RECOMENDADOS WHISKEROS
-        </h2>
+        <div className="flex items-center justify-between mb-8">
+          <h2 className="text-3xl font-bold text-white">
+            RECOMENDADOS WHISKEROS
+          </h2>
+          <Button variant="link" className="text-primary">
+            Ver todos →
+          </Button>
+        </div>
         
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
           {featuredProducts.map((product) => (
             <ProductCard key={product.name} {...product} />
           ))}
