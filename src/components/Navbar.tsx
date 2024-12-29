@@ -1,13 +1,26 @@
 import { ShoppingCart, User, Search } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 
 const Navbar = () => {
+  const location = useLocation();
+  const categories = [
+    { name: "Inicio", path: "/" },
+    { name: "Whiskies", path: "/whiskies" },
+    { name: "Vodkas", path: "/vodkas" },
+    { name: "Rones", path: "/rones" },
+    { name: "Vinos", path: "/vinos" },
+    { name: "Espumantes", path: "/espumantes" },
+    { name: "Piscos", path: "/piscos" },
+    { name: "Tequilas", path: "/tequilas" },
+    { name: "Gins", path: "/gins" },
+    { name: "Otros", path: "/otros" }
+  ];
+
   return (
     <nav className="bg-background sticky top-0 z-50 shadow-lg">
       <div className="max-w-7xl mx-auto px-4">
-        {/* Top Bar */}
         <div className="flex items-center justify-between py-4 border-b border-gray-700">
           <div className="flex items-center w-1/3">
             <div className="relative w-full max-w-xs">
@@ -39,19 +52,18 @@ const Navbar = () => {
           </div>
         </div>
 
-        {/* Categories */}
         <div className="flex items-center justify-start py-4 space-x-8 overflow-x-auto scrollbar-hide">
-          {["Inicio", "Whiskies", "Vodkas", "Rones", "Vinos", "Espumantes", "Piscos", "Tequilas", "Gins", "Otros"].map(
-            (category) => (
-              <Link
-                key={category}
-                to={`/${category.toLowerCase()}`}
-                className="text-white hover:text-primary whitespace-nowrap transition-colors text-sm font-medium"
-              >
-                {category}
-              </Link>
-            )
-          )}
+          {categories.map((category) => (
+            <Link
+              key={category.path}
+              to={category.path}
+              className={`text-white hover:text-primary whitespace-nowrap transition-colors text-sm font-medium ${
+                location.pathname === category.path ? "text-primary" : ""
+              }`}
+            >
+              {category.name}
+            </Link>
+          ))}
         </div>
       </div>
     </nav>
