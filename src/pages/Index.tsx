@@ -1,6 +1,7 @@
 import Navbar from "@/components/Navbar";
 import Hero from "@/components/Hero";
 import ProductCard from "@/components/ProductCard";
+import { Button } from "@/components/ui/button";
 
 const Index = () => {
   const featuredProducts = [
