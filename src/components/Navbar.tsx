@@ -19,15 +19,15 @@ const Navbar = () => {
   ];
 
   return (
-    <nav className="bg-background sticky top-0 z-50 shadow-lg">
+    <nav className="bg-black sticky top-0 z-50">
       <div className="max-w-7xl mx-auto px-4">
-        <div className="flex items-center justify-between py-4 border-b border-gray-700">
+        <div className="flex items-center justify-between py-6 border-b border-white/10">
           <div className="flex items-center w-1/3">
             <div className="relative w-full max-w-xs">
               <Input
                 type="search"
                 placeholder="¿Qué licor buscas?"
-                className="pl-10 bg-secondary text-foreground"
+                className="pl-10 bg-white/5 border-white/10 text-white placeholder:text-gray-400"
               />
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
             </div>
@@ -40,12 +40,12 @@ const Navbar = () => {
           </Link>
           
           <div className="w-1/3 flex justify-end items-center space-x-6">
-            <Button variant="ghost" size="icon" className="hover:bg-primary/10">
+            <Button variant="ghost" size="icon" className="hover:bg-white/5">
               <User className="h-6 w-6 text-white" />
             </Button>
-            <Button variant="ghost" size="icon" className="relative hover:bg-primary/10">
+            <Button variant="ghost" size="icon" className="relative hover:bg-white/5">
               <ShoppingCart className="h-6 w-6 text-white" />
-              <span className="absolute -top-1 -right-1 bg-primary text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
+              <span className="absolute -top-1 -right-1 bg-white text-black text-xs rounded-full h-5 w-5 flex items-center justify-center">
                 0
               </span>
             </Button>
@@ -57,8 +57,8 @@ const Navbar = () => {
             <Link
               key={category.path}
               to={category.path}
-              className={`text-white hover:text-primary whitespace-nowrap transition-colors text-sm font-medium ${
-                location.pathname === category.path ? "text-primary" : ""
+              className={`text-gray-300 hover:text-white whitespace-nowrap transition-colors text-sm font-medium ${
+                location.pathname === category.path ? "text-white" : ""
               }`}
             >
               {category.name}

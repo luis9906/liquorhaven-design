@@ -32,19 +32,19 @@ const Index = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-black">
       <Navbar />
       <Hero />
       
       <div className="container mx-auto px-4 py-24">
-        <div className="flex items-center justify-between mb-12">
+        <div className="flex items-center justify-between mb-16">
           <div>
-            <h2 className="text-4xl font-bold text-white mb-2">
-              COLECCIÓN PREMIUM
+            <h2 className="text-5xl font-bold text-white mb-4 tracking-tight">
+              Colección Premium
             </h2>
-            <p className="text-gray-400">Descubre nuestra selección de licores exclusivos</p>
+            <p className="text-gray-400 text-lg">Descubre nuestra selección de licores exclusivos</p>
           </div>
-          <Button variant="link" className="text-primary text-lg">
+          <Button variant="outline" className="text-white border-white hover:bg-white hover:text-black text-lg px-8">
             Ver catálogo completo →
           </Button>
         </div>
