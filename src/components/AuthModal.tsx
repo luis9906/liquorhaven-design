@@ -8,13 +8,8 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useState } from "react";
-import { createClient } from "@supabase/supabase-js";
 import { useToast } from "@/components/ui/use-toast";
-
-const supabase = createClient(
-  import.meta.env.VITE_SUPABASE_URL || "",
-  import.meta.env.VITE_SUPABASE_ANON_KEY || ""
-);
+import { supabase } from "@/lib/supabase";
 
 export const AuthModal = () => {
   const [isLogin, setIsLogin] = useState(true);

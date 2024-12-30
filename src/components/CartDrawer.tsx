@@ -8,13 +8,8 @@ import {
 import { Button } from "@/components/ui/button";
 import { ShoppingCart, Minus, Plus, Trash2 } from "lucide-react";
 import { useCart } from "@/context/CartContext";
-import { createClient } from "@supabase/supabase-js";
 import { toast } from "sonner";
-
-const supabase = createClient(
-  import.meta.env.VITE_SUPABASE_URL || "",
-  import.meta.env.VITE_SUPABASE_ANON_KEY || ""
-);
+import { supabase } from "@/lib/supabase";
 
 export const CartDrawer = () => {
   const { items, removeItem, updateQuantity, total, clearCart } = useCart();
