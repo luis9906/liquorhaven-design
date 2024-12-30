@@ -8,10 +8,33 @@ import {
 import { Button } from "@/components/ui/button";
 import { ShoppingCart, Minus, Plus, Trash2 } from "lucide-react";
 import { useCart } from "@/context/CartContext";
-import { Separator } from "@/components/ui/separator";
+import { createClient } from "@supabase/supabase-js";
+import { toast } from "sonner";
+
+const supabase = createClient(
+  process.env.SUPABASE_URL || "",
+  process.env.SUPABASE_ANON_KEY || ""
+);
 
 export const CartDrawer = () => {
   const { items, removeItem, updateQuantity, total, clearCart } = useCart();
+
+  const handleCheckout = async () => {
+    const { data: { user } } = await supabase.auth.getUser();
+    
+    if (!user) {
+      toast.error("Por favor inicia sesión para continuar con la compra");
+      return;
+    }
+
+    try {
+      // Aquí iría la lógica de checkout con Stripe o el procesador de pagos que elijas
+      toast.success("¡Compra realizada con éxito!");
+      clearCart();
+    } catch (error) {
+      toast.error("Error al procesar la compra");
+    }
+  };
 
   return (
     <Sheet>
@@ -91,6 +114,7 @@ export const CartDrawer = () => {
               </Button>
               <Button
                 className="flex-1 bg-white text-black hover:bg-white/90"
+                onClick={handleCheckout}
               >
                 Comprar
               </Button>
