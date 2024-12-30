@@ -1,7 +1,8 @@
-import { ShoppingCart, User, Search } from "lucide-react";
+import { User, Search } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Link, useLocation } from "react-router-dom";
+import { CartDrawer } from "./CartDrawer";
 
 const Navbar = () => {
   const location = useLocation();
@@ -43,12 +44,7 @@ const Navbar = () => {
             <Button variant="ghost" size="icon" className="hover:bg-white/5">
               <User className="h-6 w-6 text-white" />
             </Button>
-            <Button variant="ghost" size="icon" className="relative hover:bg-white/5">
-              <ShoppingCart className="h-6 w-6 text-white" />
-              <span className="absolute -top-1 -right-1 bg-white text-black text-xs rounded-full h-5 w-5 flex items-center justify-center">
-                0
-              </span>
-            </Button>
+            <CartDrawer />
           </div>
         </div>
 

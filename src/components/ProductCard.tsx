@@ -1,15 +1,27 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+import { useCart } from "@/context/CartContext";
 
 interface ProductCardProps {
+  id: string;
   name: string;
   image: string;
   price: number;
   discount: number;
 }
 
-const ProductCard = ({ name, image, price, discount }: ProductCardProps) => {
+const ProductCard = ({ id, name, image, price, discount }: ProductCardProps) => {
+  const { addItem } = useCart();
   const discountedPrice = price - discount;
+
+  const handleAddToCart = () => {
+    addItem({
+      id,
+      name,
+      price: discountedPrice,
+      image,
+    });
+  };
 
   return (
     <Card className="bg-black/50 backdrop-blur-sm group hover:shadow-2xl transition-all duration-300 border-0">
@@ -38,7 +50,10 @@ const ProductCard = ({ name, image, price, discount }: ProductCardProps) => {
               S/. {discountedPrice.toFixed(2)}
             </span>
           </div>
-          <Button className="w-full bg-white hover:bg-white/90 text-black text-lg py-6">
+          <Button 
+            className="w-full bg-white hover:bg-white/90 text-black text-lg py-6"
+            onClick={handleAddToCart}
+          >
             Agregar al carrito
           </Button>
         </div>
