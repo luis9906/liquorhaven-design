@@ -1,4 +1,4 @@
-import { User, Search } from "lucide-react";
+import { User, Search, LogOut } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Link, useLocation, useNavigate } from "react-router-dom";
@@ -7,11 +7,14 @@ import { AuthModal } from "./AuthModal";
 import { useState } from "react";
 import { categoryProducts } from "@/data/categoryProducts";
 import { toast } from "sonner";
+import { useAuth } from "@/context/AuthContext";
+import { AdminPanel } from "./AdminPanel";
 
 const Navbar = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState("");
+  const { user, logout } = useAuth();
 
   const categories = [
     { name: "Inicio", path: "/" },
@@ -88,7 +91,26 @@ const Navbar = () => {
           </Link>
           
           <div className="w-1/3 flex justify-end items-center space-x-6">
-            <AuthModal />
+            {user ? (
+              <>
+                <div className="flex items-center gap-4">
+                  <span className="text-white">
+                    {user.isAdmin ? "Administrador" : user.email}
+                  </span>
+                  {user.isAdmin && <AdminPanel />}
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={logout}
+                    className="text-white hover:text-white/80"
+                  >
+                    <LogOut className="h-5 w-5" />
+                  </Button>
+                </div>
+              </>
+            ) : (
+              <AuthModal />
+            )}
             <CartDrawer />
           </div>
         </div>

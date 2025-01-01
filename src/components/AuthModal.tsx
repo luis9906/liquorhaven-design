@@ -10,6 +10,7 @@ import { Input } from "@/components/ui/input";
 import { useState } from "react";
 import { useToast } from "@/components/ui/use-toast";
 import { supabase } from "@/lib/supabase";
+import { useAuth } from "@/context/AuthContext";
 import {
   Select,
   SelectContent,
@@ -22,25 +23,29 @@ export const AuthModal = () => {
   const [isLogin, setIsLogin] = useState(true);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [userType, setUserType] = useState("user"); // "admin" o "user"
+  const [userType, setUserType] = useState("user");
+  const [isOpen, setIsOpen] = useState(false);
   const { toast } = useToast();
+  const { setUser } = useAuth();
 
   const handleAuth = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
       if (userType === "admin") {
-        // Verificar la contraseña del administrador
         if (password === "Patines12345") {
+          setUser({
+            email: "admin@licoreria247.com",
+            isAdmin: true
+          });
           toast({
             title: "¡Bienvenido Administrador!",
             description: "Has iniciado sesión como administrador.",
           });
-          // Aquí podrías establecer el estado global de administrador
+          setIsOpen(false);
         } else {
           throw new Error("Contraseña de administrador incorrecta");
         }
       } else {
-        // Manejo de usuario regular
         if (isLogin) {
           const { error } = await supabase.auth.signInWithPassword({
             email,
@@ -51,6 +56,7 @@ export const AuthModal = () => {
             title: "¡Bienvenido!",
             description: "Has iniciado sesión correctamente.",
           });
+          setIsOpen(false);
         } else {
           const { error } = await supabase.auth.signUp({
             email,
@@ -61,6 +67,7 @@ export const AuthModal = () => {
             title: "¡Registro exitoso!",
             description: "Por favor verifica tu correo electrónico.",
           });
+          setIsOpen(false);
         }
       }
     } catch (error: any) {
@@ -73,7 +80,7 @@ export const AuthModal = () => {
   };
 
   return (
-    <Dialog>
+    <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
         <Button variant="outline" className="text-white border-white hover:bg-white hover:text-black">
           {isLogin ? "Iniciar Sesión" : "Registrarse"}
