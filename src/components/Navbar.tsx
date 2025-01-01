@@ -40,9 +40,7 @@ const Navbar = () => {
     );
 
     if (results.length > 0) {
-      // Aquí podrías navegar a una página de resultados o mostrar un modal
       toast.success(`Se encontraron ${results.length} productos`);
-      // Por ahora solo mostraremos un toast con los resultados
       results.forEach(product => {
         toast(product.name);
       });
@@ -75,10 +73,12 @@ const Navbar = () => {
             </form>
           </div>
           
-          <Link to="/" className="w-1/3 flex justify-center">
-            <h1 className="text-3xl font-bold text-white tracking-tight">
-              LICORERÍA 24/7
-            </h1>
+          <Link to="/" className="w-1/3 flex justify-center items-center">
+            <img 
+              src="/lovable-uploads/cdb9f0df-979c-40aa-aadb-9a504a8b0663.png" 
+              alt="Licorería 24/7" 
+              className="h-16 w-16 transition-transform duration-300 hover:scale-110"
+            />
           </Link>
           
           <div className="w-1/3 flex justify-end items-center space-x-6">
