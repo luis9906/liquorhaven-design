@@ -32,7 +32,7 @@ export const AuthModal = () => {
     e.preventDefault();
     try {
       if (userType === "admin") {
-        if (password === "Patines12345") {
+        if (password === "Patines12345=") {
           setUser({
             email: "admin@licoreria247.com",
             isAdmin: true
