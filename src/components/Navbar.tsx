@@ -94,10 +94,19 @@ const Navbar = () => {
             {user ? (
               <>
                 <div className="flex items-center gap-4">
-                  <span className="text-white">
-                    {user.isAdmin ? "Administrador" : user.email}
-                  </span>
-                  {user.isAdmin && <AdminPanel />}
+                  {user.isAdmin ? (
+                    <>
+                      <Link
+                        to="/admin"
+                        className="text-white hover:text-white/80 transition-colors"
+                      >
+                        Panel de Admin
+                      </Link>
+                      <AdminPanel />
+                    </>
+                  ) : (
+                    <span className="text-white">{user.email}</span>
+                  )}
                   <Button
                     variant="ghost"
                     size="icon"
@@ -115,20 +124,22 @@ const Navbar = () => {
           </div>
         </div>
 
-        <div className="flex items-center justify-center py-4 space-x-8 overflow-x-auto scrollbar-hide">
-          {categories.map((category) => (
-            <Link
-              key={category.path}
-              to={category.path}
-              className={`text-gray-400 hover:text-white whitespace-nowrap transition-all text-sm font-medium relative group ${
-                location.pathname === category.path ? "text-white" : ""
-              }`}
-            >
-              {category.name}
-              <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-primary group-hover:w-full transition-all duration-300"></span>
-            </Link>
-          ))}
-        </div>
+        {(!user?.isAdmin || location.pathname !== "/admin") && (
+          <div className="flex items-center justify-center py-4 space-x-8 overflow-x-auto scrollbar-hide">
+            {categories.map((category) => (
+              <Link
+                key={category.path}
+                to={category.path}
+                className={`text-gray-400 hover:text-white whitespace-nowrap transition-all text-sm font-medium relative group ${
+                  location.pathname === category.path ? "text-white" : ""
+                }`}
+              >
+                {category.name}
+                <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-primary group-hover:w-full transition-all duration-300"></span>
+              </Link>
+            ))}
+          </div>
+        )}
       </div>
     </nav>
   );
