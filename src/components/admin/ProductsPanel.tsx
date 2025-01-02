@@ -7,7 +7,7 @@ import {
 import { ProductTable } from "./ProductTable";
 import { ProductForm } from "./ProductForm";
 import { useState } from "react";
-import { Product } from "@/data/categoryProducts";
+import { Product, categoryProducts } from "@/data/categoryProducts";
 import { useToast } from "@/components/ui/use-toast";
 import { Card } from "@/components/ui/card";
 
@@ -35,6 +35,8 @@ export const ProductsPanel = () => {
     });
     setEditingProduct(null);
   };
+
+  const allProducts = Object.values(categoryProducts).flat();
 
   return (
     <Card className="p-6 bg-black/50 backdrop-blur-sm border-white/10">
@@ -67,7 +69,7 @@ export const ProductsPanel = () => {
           </AccordionTrigger>
           <AccordionContent>
             <ProductTable
-              products={Object.values(categoryProducts).flat()}
+              products={allProducts}
               onEdit={handleEdit}
               onDelete={handleDelete}
             />
