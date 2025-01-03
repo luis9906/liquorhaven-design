@@ -7,7 +7,7 @@ import {
 import { ProductTable } from "./ProductTable";
 import { ProductForm } from "./ProductForm";
 import { useState } from "react";
-import { Product } from "@/data/categoryProducts";
+import { Product, categoryProducts } from "@/data/categoryProducts";
 import { useToast } from "@/components/ui/use-toast";
 import { Card } from "@/components/ui/card";
 import { useQuery } from "@tanstack/react-query";

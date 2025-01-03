@@ -9,7 +9,12 @@ export interface Product {
   category?: string;
 }
 
-const categoryProducts = {
+export const categoryTitles = {
+  beverages: "Bebidas",
+  spirits: "Licores"
+};
+
+export const categoryProducts = {
   beverages: [
     {
       id: "1",
@@ -55,5 +60,3 @@ const categoryProducts = {
     },
   ],
 };
-
-export default categoryProducts;
