@@ -3,9 +3,37 @@ import Hero from "@/components/Hero";
 import ProductCard from "@/components/ProductCard";
 import { Button } from "@/components/ui/button";
 import { motion } from "framer-motion";
-import { Wine, Clock, Truck, CreditCard } from "lucide-react";
+import { Wine, Clock, Truck, CreditCard, Sparkles } from "lucide-react";
+import { Link } from "react-router-dom";
 
 const Index = () => {
+  const mainCategories = [
+    {
+      id: "whisky",
+      name: "Whisky",
+      image: "/lovable-uploads/9da04d7a-366f-43fe-af09-c16fdbd434b7.png",
+      color: "from-amber-500 to-amber-700"
+    },
+    {
+      id: "vinos",
+      name: "Vinos",
+      image: "/lovable-uploads/9da04d7a-366f-43fe-af09-c16fdbd434b7.png",
+      color: "from-red-500 to-red-700"
+    },
+    {
+      id: "cerveza",
+      name: "Cerveza",
+      image: "/lovable-uploads/9da04d7a-366f-43fe-af09-c16fdbd434b7.png",
+      color: "from-yellow-500 to-yellow-700"
+    },
+    {
+      id: "vodka",
+      name: "Vodka",
+      image: "/lovable-uploads/9da04d7a-366f-43fe-af09-c16fdbd434b7.png",
+      color: "from-blue-500 to-blue-700"
+    }
+  ];
+
   const featuredProducts = [
     {
       id: "jw-blue-label",
@@ -64,6 +92,48 @@ const Index = () => {
     <div className="min-h-screen bg-gradient-to-b from-black via-gray-900 to-black">
       <Navbar />
       <Hero />
+      
+      {/* Main Categories */}
+      <div className="container mx-auto px-4 -mt-20 relative z-20">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+          {mainCategories.map((category) => (
+            <Link key={category.id} to={`/${category.id}`}>
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                className={`bg-gradient-to-r ${category.color} p-6 rounded-xl shadow-lg hover:scale-105 transition-all duration-300`}
+              >
+                <div className="flex items-center justify-between">
+                  <h3 className="text-2xl font-bold text-white">{category.name}</h3>
+                  <img src={category.image} alt={category.name} className="w-16 h-16 object-cover rounded-lg" />
+                </div>
+              </motion.div>
+            </Link>
+          ))}
+        </div>
+      </div>
+
+      {/* Ofertas Especiales */}
+      <div className="container mx-auto px-4 py-16">
+        <div className="bg-gradient-to-r from-red-500 to-red-700 p-8 rounded-2xl mb-16">
+          <div className="flex items-center gap-4 mb-6">
+            <Sparkles className="w-8 h-8 text-white" />
+            <h2 className="text-3xl font-bold text-white">Ofertas Especiales</h2>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            {featuredProducts.slice(0, 2).map((product) => (
+              <motion.div
+                key={product.id}
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                className="bg-white/10 backdrop-blur-sm rounded-xl p-4"
+              >
+                <ProductCard {...product} />
+              </motion.div>
+            ))}
+          </div>
+        </div>
+      </div>
       
       {/* Features Section */}
       <div className="bg-white/5 backdrop-blur-lg py-16">
