@@ -4,9 +4,9 @@ import { motion } from "framer-motion";
 const Hero = () => {
   return (
     <div className="relative h-[90vh] flex items-center">
-      <div className="absolute inset-0 bg-gradient-to-r from-black/70 via-black/60 to-transparent z-10"></div>
+      <div className="absolute inset-0 bg-gradient-to-r from-black/50 via-black/40 to-transparent z-10"></div>
       <div 
-        className="absolute inset-0 bg-cover bg-center bg-fixed brightness-125 contrast-125 saturate-150"
+        className="absolute inset-0 bg-cover bg-center bg-fixed brightness-150 contrast-125 saturate-150"
         style={{
           backgroundImage: `url('/lovable-uploads/0a56e83e-1603-402b-aa35-8b36aeab3193.png')`
         }}
@@ -25,7 +25,7 @@ const Hero = () => {
           <h2 className="text-7xl md:text-8xl font-bold text-white mb-8 leading-none tracking-tighter drop-shadow-2xl">
             SERVICIO<br />24/7
           </h2>
-          <p className="text-xl text-white mb-12 leading-relaxed font-light backdrop-blur-sm bg-black/20 p-6 rounded-xl">
+          <p className="text-xl text-white mb-12 leading-relaxed font-light backdrop-blur-sm bg-black/10 p-6 rounded-xl">
             Descubre nuestra selecta colección de licores premium y experimenta un servicio excepcional las 24 horas del día.
           </p>
           <div className="flex flex-col sm:flex-row gap-6">

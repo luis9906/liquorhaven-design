@@ -1,142 +1,45 @@
 import Navbar from "@/components/Navbar";
 import Hero from "@/components/Hero";
-import ProductCard from "@/components/ProductCard";
-import { Button } from "@/components/ui/button";
+import Categories from "@/components/sections/Categories";
+import FeaturedProducts from "@/components/sections/FeaturedProducts";
+import Promotions from "@/components/sections/Promotions";
 import { motion } from "framer-motion";
-import { Wine, Clock, Truck, CreditCard, Sparkles } from "lucide-react";
-import { Link } from "react-router-dom";
+import { Wine, Clock, Truck, CreditCard } from "lucide-react";
+
+const features = [
+  {
+    icon: <Wine className="w-8 h-8" />,
+    title: "Selección Premium",
+    description: "Las mejores marcas y variedades"
+  },
+  {
+    icon: <Clock className="w-8 h-8" />,
+    title: "24/7 Disponible",
+    description: "Servicio ininterrumpido"
+  },
+  {
+    icon: <Truck className="w-8 h-8" />,
+    title: "Entrega Rápida",
+    description: "Envíos en menos de 60 min"
+  },
+  {
+    icon: <CreditCard className="w-8 h-8" />,
+    title: "Pago Seguro",
+    description: "Múltiples métodos de pago"
+  }
+];
 
 const Index = () => {
-  const mainCategories = [
-    {
-      id: "whisky",
-      name: "Whisky",
-      image: "/lovable-uploads/9da04d7a-366f-43fe-af09-c16fdbd434b7.png",
-      color: "from-amber-500 to-amber-700"
-    },
-    {
-      id: "vinos",
-      name: "Vinos",
-      image: "/lovable-uploads/9da04d7a-366f-43fe-af09-c16fdbd434b7.png",
-      color: "from-red-500 to-red-700"
-    },
-    {
-      id: "cerveza",
-      name: "Cerveza",
-      image: "/lovable-uploads/9da04d7a-366f-43fe-af09-c16fdbd434b7.png",
-      color: "from-yellow-500 to-yellow-700"
-    },
-    {
-      id: "vodka",
-      name: "Vodka",
-      image: "/lovable-uploads/9da04d7a-366f-43fe-af09-c16fdbd434b7.png",
-      color: "from-blue-500 to-blue-700"
-    }
-  ];
-
-  const featuredProducts = [
-    {
-      id: "jw-blue-label",
-      name: "Johnnie Walker Blue Label",
-      image: "/lovable-uploads/9da04d7a-366f-43fe-af09-c16fdbd434b7.png",
-      price: 899.90,
-      discount: 100.00,
-    },
-    {
-      id: "macallan-18",
-      name: "Macallan 18 Years",
-      image: "/lovable-uploads/9da04d7a-366f-43fe-af09-c16fdbd434b7.png",
-      price: 1274.90,
-      discount: 175.00,
-    },
-    {
-      id: "don-perignon-vintage",
-      name: "Don Perignon Vintage",
-      image: "/lovable-uploads/9da04d7a-366f-43fe-af09-c16fdbd434b7.png",
-      price: 1250.00,
-      discount: 150.00,
-    },
-    {
-      id: "hennessy-xo",
-      name: "Hennessy X.O",
-      image: "/lovable-uploads/9da04d7a-366f-43fe-af09-c16fdbd434b7.png",
-      price: 1445.00,
-      discount: 245.00,
-    },
-  ];
-
-  const features = [
-    {
-      icon: <Wine className="w-8 h-8" />,
-      title: "Selección Premium",
-      description: "Las mejores marcas y variedades"
-    },
-    {
-      icon: <Clock className="w-8 h-8" />,
-      title: "24/7 Disponible",
-      description: "Servicio ininterrumpido"
-    },
-    {
-      icon: <Truck className="w-8 h-8" />,
-      title: "Entrega Rápida",
-      description: "Envíos en menos de 60 min"
-    },
-    {
-      icon: <CreditCard className="w-8 h-8" />,
-      title: "Pago Seguro",
-      description: "Múltiples métodos de pago"
-    }
-  ];
-
   return (
     <div className="min-h-screen bg-gradient-to-b from-black via-gray-900 to-black">
       <Navbar />
       <Hero />
       
-      {/* Main Categories */}
-      <div className="container mx-auto px-4 -mt-20 relative z-20">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-          {mainCategories.map((category) => (
-            <Link key={category.id} to={`/${category.id}`}>
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                className={`bg-gradient-to-r ${category.color} p-6 rounded-xl shadow-lg hover:scale-105 transition-all duration-300`}
-              >
-                <div className="flex items-center justify-between">
-                  <h3 className="text-2xl font-bold text-white">{category.name}</h3>
-                  <img src={category.image} alt={category.name} className="w-16 h-16 object-cover rounded-lg" />
-                </div>
-              </motion.div>
-            </Link>
-          ))}
-        </div>
-      </div>
-
-      {/* Ofertas Especiales */}
-      <div className="container mx-auto px-4 py-16">
-        <div className="bg-gradient-to-r from-red-500 to-red-700 p-8 rounded-2xl mb-16">
-          <div className="flex items-center gap-4 mb-6">
-            <Sparkles className="w-8 h-8 text-white" />
-            <h2 className="text-3xl font-bold text-white">Ofertas Especiales</h2>
-          </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {featuredProducts.slice(0, 2).map((product) => (
-              <motion.div
-                key={product.id}
-                initial={{ opacity: 0, scale: 0.9 }}
-                animate={{ opacity: 1, scale: 1 }}
-                className="bg-white/10 backdrop-blur-sm rounded-xl p-4"
-              >
-                <ProductCard {...product} />
-              </motion.div>
-            ))}
-          </div>
-        </div>
-      </div>
+      {/* Categories Section */}
+      <Categories />
       
       {/* Features Section */}
-      <div className="bg-white/5 backdrop-blur-lg py-16">
+      <div className="bg-gradient-to-b from-black via-purple-900/10 to-black py-16">
         <div className="container mx-auto px-4">
           <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
             {features.map((feature, index) => (
@@ -157,41 +60,12 @@ const Index = () => {
           </div>
         </div>
       </div>
+
+      {/* Featured Products Section */}
+      <FeaturedProducts />
       
-      {/* Featured Products */}
-      <div className="container mx-auto px-4 py-24">
-        <div className="flex items-center justify-between mb-16">
-          <motion.div
-            initial={{ opacity: 0, x: -20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.5 }}
-          >
-            <h2 className="text-5xl font-bold text-white mb-4 tracking-tight">
-              Colección Premium
-            </h2>
-            <p className="text-gray-400 text-lg">Descubre nuestra selección de licores exclusivos</p>
-          </motion.div>
-          <Button 
-            variant="outline" 
-            className="text-white border-white hover:bg-white hover:text-black text-lg px-8 transform hover:scale-105 transition-all duration-300"
-          >
-            Ver catálogo completo →
-          </Button>
-        </div>
-        
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
-          {featuredProducts.map((product) => (
-            <motion.div
-              key={product.id}
-              initial={{ opacity: 0, scale: 0.9 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ duration: 0.5 }}
-            >
-              <ProductCard {...product} />
-            </motion.div>
-          ))}
-        </div>
-      </div>
+      {/* Promotions Section */}
+      <Promotions />
 
       {/* Footer */}
       <footer className="bg-black/50 backdrop-blur-lg border-t border-white/10">
