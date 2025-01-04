@@ -4,6 +4,7 @@ import { AuthModal } from "@/components/AuthModal";
 import { CartDrawer } from "@/components/CartDrawer";
 import { Search } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { ThemeToggle } from "@/components/ThemeToggle";
 import {
   NavigationMenu,
   NavigationMenuContent,
@@ -30,7 +31,7 @@ const Navbar = () => {
           <NavigationMenu>
             <NavigationMenuList>
               <NavigationMenuItem>
-                <NavigationMenuTrigger className="text-white">Categorías</NavigationMenuTrigger>
+                <NavigationMenuTrigger>Categorías</NavigationMenuTrigger>
                 <NavigationMenuContent>
                   <ul className="grid w-[400px] gap-3 p-4 md:w-[500px] md:grid-cols-2 lg:w-[600px]">
                     {Object.entries(categoryTitles).map(([key, title]) => (
@@ -58,9 +59,10 @@ const Navbar = () => {
             size="icon"
             className="hover:bg-white/5"
           >
-            <Search className="h-6 w-6 text-white" />
+            <Search className="h-6 w-6" />
           </Button>
           
+          <ThemeToggle />
           <CartDrawer />
           <AuthModal />
           <AdminPanel />
