@@ -39,7 +39,7 @@ export const EditableContent = ({ content, type = "text", onSave, className = ""
         <Button
           variant="ghost"
           size="icon"
-          className="absolute -right-8 top-0 opacity-0 group-hover:opacity-100 transition-opacity"
+          className="absolute -right-8 top-0 opacity-0 group-hover:opacity-100 transition-opacity duration-200"
           onClick={() => setIsEditing(true)}
         >
           <Pencil className="h-4 w-4" />
