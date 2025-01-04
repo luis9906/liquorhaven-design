@@ -34,7 +34,7 @@ const featuredProducts = [
 
 const FeaturedProducts = () => {
   return (
-    <section className="py-24 bg-gradient-to-b from-black/40 via-purple-900/20 to-black/40">
+    <section className="py-24 bg-gradient-to-b from-amber-900/20 via-orange-900/10 to-black/90">
       <div className="container mx-auto px-4">
         <motion.div
           initial={{ opacity: 0, x: -20 }}
@@ -45,7 +45,7 @@ const FeaturedProducts = () => {
           <h2 className="text-5xl font-bold text-white mb-4 tracking-tight">
             Colección Premium
           </h2>
-          <p className="text-gray-400 text-lg">
+          <p className="text-amber-200/90 text-lg">
             Descubre nuestra exclusiva selección de licores de alta gama
           </p>
         </motion.div>
