@@ -3,6 +3,8 @@ import { Card, CardContent } from "@/components/ui/card";
 import { useCart } from "@/context/CartContext";
 import { motion } from "framer-motion";
 import { ShoppingCart } from "lucide-react";
+import { EditableContent } from "./EditableContent";
+import { useToast } from "./ui/use-toast";
 
 interface ProductCardProps {
   id: string;
@@ -14,6 +16,7 @@ interface ProductCardProps {
 
 const ProductCard = ({ id, name, image, price, discount }: ProductCardProps) => {
   const { addItem } = useCart();
+  const { toast } = useToast();
   const discountedPrice = price - discount;
 
   const handleAddToCart = () => {
@@ -22,6 +25,14 @@ const ProductCard = ({ id, name, image, price, discount }: ProductCardProps) => 
       name,
       price: discountedPrice,
       image,
+    });
+  };
+
+  const handleSaveContent = (type: string) => (newContent: string) => {
+    // Here you would typically make an API call to update the product
+    toast({
+      title: "Contenido actualizado",
+      description: `${type} actualizado correctamente.`,
     });
   };
 
@@ -34,6 +45,12 @@ const ProductCard = ({ id, name, image, price, discount }: ProductCardProps) => 
           </div>
         )}
         <div className="aspect-[3/4] mb-6 overflow-hidden rounded-lg bg-black/20">
+          <EditableContent
+            content={image}
+            type="image"
+            onSave={handleSaveContent("Imagen")}
+            className="w-full h-full"
+          />
           <motion.img 
             src={image} 
             alt={name}
@@ -42,17 +59,25 @@ const ProductCard = ({ id, name, image, price, discount }: ProductCardProps) => 
             transition={{ duration: 0.3 }}
           />
         </div>
-        <h3 className="text-xl font-semibold text-white mb-3 line-clamp-2">{name}</h3>
+        <EditableContent
+          content={name}
+          onSave={handleSaveContent("Nombre")}
+          className="text-xl font-semibold text-white mb-3 line-clamp-2"
+        />
         <div className="flex flex-col gap-4">
           <div className="flex items-end gap-3">
             {discount > 0 && (
-              <span className="text-gray-400 line-through text-sm">
-                S/. {price.toFixed(2)}
-              </span>
+              <EditableContent
+                content={`S/. ${price.toFixed(2)}`}
+                onSave={handleSaveContent("Precio original")}
+                className="text-gray-400 line-through text-sm"
+              />
             )}
-            <span className="text-white font-bold text-2xl">
-              S/. {discountedPrice.toFixed(2)}
-            </span>
+            <EditableContent
+              content={`S/. ${discountedPrice.toFixed(2)}`}
+              onSave={handleSaveContent("Precio con descuento")}
+              className="text-white font-bold text-2xl"
+            />
           </div>
           <Button 
             className="w-full bg-white hover:bg-white/90 text-black text-lg py-6 group"

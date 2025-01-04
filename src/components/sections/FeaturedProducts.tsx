@@ -1,5 +1,7 @@
 import { motion } from "framer-motion";
 import ProductCard from "@/components/ProductCard";
+import { EditableContent } from "@/components/EditableContent";
+import { useToast } from "@/components/ui/use-toast";
 
 const featuredProducts = [
   {
@@ -33,6 +35,15 @@ const featuredProducts = [
 ];
 
 const FeaturedProducts = () => {
+  const { toast } = useToast();
+
+  const handleSaveContent = (type: string) => (newContent: string) => {
+    toast({
+      title: "Contenido actualizado",
+      description: `${type} actualizado correctamente.`,
+    });
+  };
+
   return (
     <section className="py-24 bg-gradient-to-b from-amber-900/20 via-orange-900/10 to-black/90">
       <div className="container mx-auto px-4">
@@ -42,12 +53,16 @@ const FeaturedProducts = () => {
           transition={{ duration: 0.5 }}
           className="mb-16"
         >
-          <h2 className="text-5xl font-bold text-white mb-4 tracking-tight">
-            Colección Premium
-          </h2>
-          <p className="text-amber-200/90 text-lg">
-            Descubre nuestra exclusiva selección de licores de alta gama
-          </p>
+          <EditableContent
+            content="Colección Premium"
+            onSave={handleSaveContent("Título")}
+            className="text-5xl font-bold text-white mb-4 tracking-tight"
+          />
+          <EditableContent
+            content="Descubre nuestra exclusiva selección de licores de alta gama"
+            onSave={handleSaveContent("Subtítulo")}
+            className="text-amber-200/90 text-lg"
+          />
         </motion.div>
         
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
