@@ -5,29 +5,32 @@ import FeaturedProducts from "@/components/sections/FeaturedProducts";
 import Promotions from "@/components/sections/Promotions";
 import { motion } from "framer-motion";
 import { MessageSquare, Calendar, User } from "lucide-react";
+import { useQuery } from "@tanstack/react-query";
+import { supabase } from "@/lib/supabase";
 
-const latestPosts = [
-  {
-    title: "Nuevos productos importados",
-    content: "Acabamos de recibir una nueva colección de whiskies escoceses premium.",
-    date: "2024-03-15",
-    author: "Admin"
-  },
-  {
-    title: "Horarios especiales Semana Santa",
-    content: "Durante Semana Santa mantendremos horarios especiales de atención.",
-    date: "2024-03-14",
-    author: "Admin"
-  },
-  {
-    title: "Nueva política de delivery",
-    content: "Hemos actualizado nuestras zonas de reparto gratuito.",
-    date: "2024-03-13",
-    author: "Admin"
-  }
-];
+interface Post {
+  id: number;
+  title: string;
+  content: string;
+  date: string;
+  author: string;
+}
 
 const Index = () => {
+  const { data: latestPosts = [] } = useQuery({
+    queryKey: ['latest-posts'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('posts')
+        .select('*')
+        .order('created_at', { ascending: false })
+        .limit(3);
+      
+      if (error) throw error;
+      return data as Post[];
+    }
+  });
+
   return (
     <div className="min-h-screen bg-gradient-to-b from-black via-gray-900 to-black">
       <Navbar />

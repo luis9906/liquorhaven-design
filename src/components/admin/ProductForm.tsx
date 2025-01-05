@@ -3,6 +3,8 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Product } from "@/data/categoryProducts";
 import { useState } from "react";
+import { supabase } from "@/lib/supabase";
+import { useToast } from "@/components/ui/use-toast";
 
 interface ProductFormProps {
   product?: Product;
@@ -12,6 +14,7 @@ interface ProductFormProps {
 
 export const ProductForm = ({ product, onSubmit, onCancel }: ProductFormProps) => {
   const [imagePreview, setImagePreview] = useState<string | null>(product?.image || null);
+  const { toast } = useToast();
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -24,9 +27,32 @@ export const ProductForm = ({ product, onSubmit, onCancel }: ProductFormProps) =
     }
   };
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const createPost = async (productName: string, action: "agregado" | "actualizado") => {
+    try {
+      const { error } = await supabase.from('posts').insert({
+        title: `Nuevo producto ${action}`,
+        content: `Se ha ${action} el producto "${productName}" a nuestro catálogo.`,
+        date: new Date().toISOString(),
+        author: "Admin"
+      });
+
+      if (error) throw error;
+    } catch (error) {
+      console.error("Error creating post:", error);
+      toast({
+        title: "Error",
+        description: "No se pudo crear la publicación",
+        variant: "destructive"
+      });
+    }
+  };
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const formData = new FormData(e.currentTarget);
+    const productName = formData.get('name') as string;
+    
+    await createPost(productName, product ? "actualizado" : "agregado");
     onSubmit(formData);
   };
 
