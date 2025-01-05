@@ -4,28 +4,26 @@ import Categories from "@/components/sections/Categories";
 import FeaturedProducts from "@/components/sections/FeaturedProducts";
 import Promotions from "@/components/sections/Promotions";
 import { motion } from "framer-motion";
-import { Wine, Clock, Truck, CreditCard } from "lucide-react";
+import { MessageSquare, Calendar } from "lucide-react";
 
-const features = [
+const latestPosts = [
   {
-    icon: <Wine className="w-8 h-8" />,
-    title: "Selección Premium",
-    description: "Las mejores marcas y variedades"
+    title: "Nuevos productos importados",
+    content: "Acabamos de recibir una nueva colección de whiskies escoceses premium.",
+    date: "2024-03-15",
+    author: "Admin"
   },
   {
-    icon: <Clock className="w-8 h-8" />,
-    title: "24/7 Disponible",
-    description: "Servicio ininterrumpido"
+    title: "Horarios especiales Semana Santa",
+    content: "Durante Semana Santa mantendremos horarios especiales de atención.",
+    date: "2024-03-14",
+    author: "Admin"
   },
   {
-    icon: <Truck className="w-8 h-8" />,
-    title: "Entrega Rápida",
-    description: "Envíos en menos de 60 min"
-  },
-  {
-    icon: <CreditCard className="w-8 h-8" />,
-    title: "Pago Seguro",
-    description: "Múltiples métodos de pago"
+    title: "Nueva política de delivery",
+    content: "Hemos actualizado nuestras zonas de reparto gratuito.",
+    date: "2024-03-13",
+    author: "Admin"
   }
 ];
 
@@ -35,36 +33,46 @@ const Index = () => {
       <Navbar />
       <Hero />
       
-      {/* Categories Section */}
       <Categories />
       
-      {/* Features Section */}
-      <div className="bg-gradient-to-b from-black via-purple-900/10 to-black py-16">
+      {/* Latest Posts Section */}
+      <div className="bg-gradient-to-b from-black via-amber-900/10 to-black py-16">
         <div className="container mx-auto px-4">
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
-            {features.map((feature, index) => (
+          <motion.h2 
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="text-4xl font-bold text-amber-100 mb-12 text-center"
+          >
+            Últimas Actualizaciones
+          </motion.h2>
+          
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            {latestPosts.map((post, index) => (
               <motion.div
                 key={index}
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: index * 0.1 }}
-                className="flex flex-col items-center text-center p-6 rounded-xl bg-white/5 backdrop-blur-sm hover:bg-white/10 transition-all duration-300"
+                className="bg-gradient-to-r from-amber-900/10 to-orange-900/10 backdrop-blur-sm rounded-xl p-6 border border-orange-500/20 hover:border-orange-500/40 transition-all duration-300"
               >
-                <div className="text-primary mb-4">
-                  {feature.icon}
+                <div className="flex items-start gap-4">
+                  <MessageSquare className="w-6 h-6 text-amber-500" />
+                  <div className="flex-1">
+                    <h3 className="text-xl font-semibold text-amber-100 mb-2">{post.title}</h3>
+                    <p className="text-amber-100/80 mb-4">{post.content}</p>
+                    <div className="flex items-center gap-2 text-sm text-amber-200/60">
+                      <Calendar className="w-4 h-4" />
+                      <span>{new Date(post.date).toLocaleDateString()}</span>
+                    </div>
+                  </div>
                 </div>
-                <h3 className="text-white text-lg font-semibold mb-2">{feature.title}</h3>
-                <p className="text-gray-400">{feature.description}</p>
               </motion.div>
             ))}
           </div>
         </div>
       </div>
 
-      {/* Featured Products Section */}
       <FeaturedProducts />
-      
-      {/* Promotions Section */}
       <Promotions />
 
       {/* Footer */}
