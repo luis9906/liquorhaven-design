@@ -4,7 +4,7 @@ import Categories from "@/components/sections/Categories";
 import FeaturedProducts from "@/components/sections/FeaturedProducts";
 import Promotions from "@/components/sections/Promotions";
 import { motion } from "framer-motion";
-import { MessageSquare, Calendar } from "lucide-react";
+import { MessageSquare, Calendar, User } from "lucide-react";
 
 const latestPosts = [
   {
@@ -32,37 +32,64 @@ const Index = () => {
     <div className="min-h-screen bg-gradient-to-b from-black via-gray-900 to-black">
       <Navbar />
       <Hero />
-      
       <Categories />
       
-      {/* Latest Posts Section */}
-      <div className="bg-gradient-to-b from-black via-amber-900/10 to-black py-16">
-        <div className="container mx-auto px-4">
-          <motion.h2 
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="text-4xl font-bold text-amber-100 mb-12 text-center"
+      <motion.section 
+        initial={{ opacity: 0 }}
+        whileInView={{ opacity: 1 }}
+        transition={{ duration: 0.6 }}
+        viewport={{ once: true }}
+        className="py-24 relative overflow-hidden"
+      >
+        <div className="absolute inset-0 bg-gradient-to-b from-primary/5 via-primary/10 to-transparent"></div>
+        
+        <div className="container mx-auto px-4 relative z-10">
+          <motion.div 
+            initial={{ y: 20, opacity: 0 }}
+            whileInView={{ y: 0, opacity: 1 }}
+            transition={{ duration: 0.5 }}
+            viewport={{ once: true }}
+            className="text-center mb-16"
           >
-            Últimas Actualizaciones
-          </motion.h2>
+            <h2 className="text-5xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-primary via-orange-400 to-amber-300 mb-4">
+              Últimas Actualizaciones
+            </h2>
+            <p className="text-gray-400 text-lg">Mantente al día con nuestras novedades</p>
+          </motion.div>
           
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {latestPosts.map((post, index) => (
               <motion.div
                 key={index}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: index * 0.1 }}
-                className="bg-gradient-to-r from-amber-900/10 to-orange-900/10 backdrop-blur-sm rounded-xl p-6 border border-orange-500/20 hover:border-orange-500/40 transition-all duration-300"
+                initial={{ y: 50, opacity: 0 }}
+                whileInView={{ y: 0, opacity: 1 }}
+                transition={{ duration: 0.5, delay: index * 0.1 }}
+                viewport={{ once: true }}
+                whileHover={{ y: -5, transition: { duration: 0.2 } }}
+                className="group relative bg-white/5 backdrop-blur-md rounded-2xl p-6 border border-white/10 hover:border-primary/50 transition-all duration-300"
               >
-                <div className="flex items-start gap-4">
-                  <MessageSquare className="w-6 h-6 text-amber-500" />
-                  <div className="flex-1">
-                    <h3 className="text-xl font-semibold text-amber-100 mb-2">{post.title}</h3>
-                    <p className="text-amber-100/80 mb-4">{post.content}</p>
-                    <div className="flex items-center gap-2 text-sm text-amber-200/60">
+                <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-transparent rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                
+                <div className="relative z-10">
+                  <div className="flex items-center gap-3 mb-4">
+                    <MessageSquare className="w-5 h-5 text-primary" />
+                    <h3 className="text-xl font-semibold text-white group-hover:text-primary transition-colors">
+                      {post.title}
+                    </h3>
+                  </div>
+                  
+                  <p className="text-gray-400 mb-6 line-clamp-2 group-hover:text-gray-300 transition-colors">
+                    {post.content}
+                  </p>
+                  
+                  <div className="flex items-center justify-between text-sm text-gray-500">
+                    <div className="flex items-center gap-2">
                       <Calendar className="w-4 h-4" />
                       <span>{new Date(post.date).toLocaleDateString()}</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <User className="w-4 h-4" />
+                      <span>{post.author}</span>
                     </div>
                   </div>
                 </div>
@@ -70,7 +97,7 @@ const Index = () => {
             ))}
           </div>
         </div>
-      </div>
+      </motion.section>
 
       <FeaturedProducts />
       <Promotions />
