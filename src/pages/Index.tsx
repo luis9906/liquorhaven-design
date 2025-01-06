@@ -4,7 +4,7 @@ import Categories from "@/components/sections/Categories";
 import FeaturedProducts from "@/components/sections/FeaturedProducts";
 import Promotions from "@/components/sections/Promotions";
 import { motion } from "framer-motion";
-import { MessageSquare, Calendar, User } from "lucide-react";
+import { MessageSquare, Calendar, User, Tag } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/lib/supabase";
 
@@ -14,6 +14,8 @@ interface Post {
   content: string;
   date: string;
   author: string;
+  product_image?: string;
+  product_price?: number;
 }
 
 const Index = () => {
@@ -74,6 +76,16 @@ const Index = () => {
                 <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-transparent rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                 
                 <div className="relative z-10">
+                  {post.product_image && (
+                    <div className="mb-4 aspect-[4/3] overflow-hidden rounded-lg">
+                      <img 
+                        src={post.product_image} 
+                        alt={post.title}
+                        className="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-300"
+                      />
+                    </div>
+                  )}
+                  
                   <div className="flex items-center gap-3 mb-4">
                     <MessageSquare className="w-5 h-5 text-primary" />
                     <h3 className="text-xl font-semibold text-white group-hover:text-primary transition-colors">
@@ -81,9 +93,16 @@ const Index = () => {
                     </h3>
                   </div>
                   
-                  <p className="text-gray-400 mb-6 line-clamp-2 group-hover:text-gray-300 transition-colors">
+                  <p className="text-gray-400 mb-6 line-clamp-3 group-hover:text-gray-300 transition-colors">
                     {post.content}
                   </p>
+
+                  {post.product_price && (
+                    <div className="flex items-center gap-2 mb-4 text-primary font-semibold">
+                      <Tag className="w-4 h-4" />
+                      <span>S/. {post.product_price.toFixed(2)}</span>
+                    </div>
+                  )}
                   
                   <div className="flex items-center justify-between text-sm text-gray-500">
                     <div className="flex items-center gap-2">
