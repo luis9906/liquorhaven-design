@@ -11,6 +11,7 @@ import {
 import { useState } from "react";
 import { useToast } from "@/components/ui/use-toast";
 import { supabase } from "@/lib/supabase";
+import { Loader2 } from "lucide-react";
 
 interface Product {
   id: string;
@@ -31,8 +32,8 @@ interface ProductFormProps {
 
 export const ProductForm = ({ product, onSubmit, onCancel }: ProductFormProps) => {
   const [imagePreview, setImagePreview] = useState<string | null>(product?.image || null);
-  const { toast } = useToast();
   const [uploading, setUploading] = useState(false);
+  const { toast } = useToast();
 
   const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     try {
@@ -41,28 +42,24 @@ export const ProductForm = ({ product, onSubmit, onCancel }: ProductFormProps) =
 
       setUploading(true);
       
-      // Create a unique file name
-      const fileExt = file.name.split('.').pop();
-      const fileName = `${Math.random().toString(36).substring(2)}.${fileExt}`;
-      const filePath = `products/${fileName}`;
+      const formData = new FormData();
+      formData.append('file', file);
 
-      // Upload the file to Supabase Storage
-      const { error: uploadError, data } = await supabase.storage
-        .from('products')
-        .upload(filePath, file);
+      const response = await fetch('/api/upload-image', {
+        method: 'POST',
+        body: formData,
+      });
 
-      if (uploadError) throw uploadError;
+      if (!response.ok) {
+        throw new Error('Upload failed');
+      }
 
-      // Get the public URL
-      const { data: { publicUrl } } = supabase.storage
-        .from('products')
-        .getPublicUrl(filePath);
-
-      setImagePreview(publicUrl);
+      const { url } = await response.json();
+      setImagePreview(url);
       
       // Update the hidden input with the new image URL
       const imageInput = document.getElementById('image') as HTMLInputElement;
-      if (imageInput) imageInput.value = publicUrl;
+      if (imageInput) imageInput.value = url;
 
       toast({
         title: "Imagen subida",
@@ -157,13 +154,21 @@ export const ProductForm = ({ product, onSubmit, onCancel }: ProductFormProps) =
                 className="w-20 h-20 object-cover rounded-md"
               />
             )}
-            <Input
-              type="file"
-              accept="image/*"
-              onChange={handleImageUpload}
-              className="bg-white/5 border-white/10 text-white"
-              disabled={uploading}
-            />
+            <div className="flex-1">
+              <Input
+                type="file"
+                accept="image/*"
+                onChange={handleImageUpload}
+                className="bg-white/5 border-white/10 text-white"
+                disabled={uploading}
+              />
+              {uploading && (
+                <div className="flex items-center gap-2 mt-2 text-sm text-white/60">
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                  Subiendo imagen...
+                </div>
+              )}
+            </div>
           </div>
           <Input
             id="image"
