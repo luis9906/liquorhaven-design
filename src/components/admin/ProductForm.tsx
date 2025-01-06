@@ -1,17 +1,7 @@
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { useState } from "react";
-import { useToast } from "@/components/ui/use-toast";
-import { supabase } from "@/lib/supabase";
-import { Loader2 } from "lucide-react";
+import { ImageUploadField } from "./forms/ImageUploadField";
+import { ProductFormFields } from "./forms/ProductFormFields";
 
 interface Product {
   id: string;
@@ -31,159 +21,39 @@ interface ProductFormProps {
 }
 
 export const ProductForm = ({ product, onSubmit, onCancel }: ProductFormProps) => {
-  const [imagePreview, setImagePreview] = useState<string | null>(product?.image || null);
-  const [uploading, setUploading] = useState(false);
-  const { toast } = useToast();
-
-  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    try {
-      const file = e.target.files?.[0];
-      if (!file) return;
-
-      setUploading(true);
-      
-      const formData = new FormData();
-      formData.append('file', file);
-
-      const response = await fetch('/api/upload-image', {
-        method: 'POST',
-        body: formData,
-      });
-
-      if (!response.ok) {
-        throw new Error('Upload failed');
-      }
-
-      const { url } = await response.json();
-      setImagePreview(url);
-      
-      // Update the hidden input with the new image URL
-      const imageInput = document.getElementById('image') as HTMLInputElement;
-      if (imageInput) imageInput.value = url;
-
-      toast({
-        title: "Imagen subida",
-        description: "La imagen se ha subido correctamente.",
-      });
-    } catch (error) {
-      console.error('Error:', error);
-      toast({
-        title: "Error",
-        description: "No se pudo subir la imagen.",
-        variant: "destructive",
-      });
-    } finally {
-      setUploading(false);
-    }
-  };
+  const [imageUrl, setImageUrl] = useState<string | null>(product?.image || null);
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const formData = new FormData(e.currentTarget);
+    if (imageUrl) {
+      formData.set('image', imageUrl);
+    }
     onSubmit(formData);
   };
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
-      <div className="space-y-2">
-        <Input
-          name="name"
-          type="text"
-          defaultValue={product?.name}
-          placeholder="Nombre del producto"
-          className="bg-white/5 border-white/10 text-white"
-          required
-        />
-        
-        <div className="grid grid-cols-2 gap-4">
-          <Input
-            name="price"
-            type="number"
-            step="0.01"
-            defaultValue={product?.price}
-            placeholder="Precio"
-            className="bg-white/5 border-white/10 text-white"
-            required
-          />
-          <Input
-            name="discount"
-            type="number"
-            step="0.01"
-            defaultValue={product?.discount}
-            placeholder="Descuento"
-            className="bg-white/5 border-white/10 text-white"
-            required
-          />
-        </div>
-
-        <Select name="category" defaultValue={product?.category || "beverages"}>
-          <SelectTrigger className="bg-white/5 border-white/10 text-white">
-            <SelectValue placeholder="Categoría" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="beverages">Bebidas</SelectItem>
-            <SelectItem value="spirits">Licores</SelectItem>
-            <SelectItem value="wines">Vinos</SelectItem>
-            <SelectItem value="beers">Cervezas</SelectItem>
-          </SelectContent>
-        </Select>
-
-        <Input
-          name="stock"
-          type="number"
-          defaultValue={product?.stock}
-          placeholder="Stock disponible"
-          className="bg-white/5 border-white/10 text-white"
-          required
-        />
-
-        <Textarea
-          name="description"
-          placeholder="Descripción del producto"
-          defaultValue={product?.description}
-          className="bg-white/5 border-white/10 text-white min-h-[100px]"
-          required
-        />
-
-        <div className="space-y-2">
-          <div className="flex gap-4 items-center">
-            {imagePreview && (
-              <img 
-                src={imagePreview} 
-                alt="Preview" 
-                className="w-20 h-20 object-cover rounded-md"
-              />
-            )}
-            <div className="flex-1">
-              <Input
-                type="file"
-                accept="image/*"
-                onChange={handleImageUpload}
-                className="bg-white/5 border-white/10 text-white"
-                disabled={uploading}
-              />
-              {uploading && (
-                <div className="flex items-center gap-2 mt-2 text-sm text-white/60">
-                  <Loader2 className="w-4 h-4 animate-spin" />
-                  Subiendo imagen...
-                </div>
-              )}
-            </div>
-          </div>
-          <Input
-            id="image"
-            name="image"
-            type="hidden"
-            defaultValue={product?.image}
-          />
-        </div>
-      </div>
+      <ProductFormFields
+        defaultValues={{
+          name: product?.name,
+          price: product?.price,
+          discount: product?.discount,
+          description: product?.description,
+          category: product?.category,
+          stock: product?.stock,
+        }}
+      />
+      
+      <ImageUploadField
+        defaultValue={product?.image}
+        onImageUploaded={setImageUrl}
+      />
       
       <div className="flex gap-4">
         <Button 
           type="submit" 
           className="flex-1 bg-white text-black hover:bg-white/90"
-          disabled={uploading}
         >
           {product ? "Guardar Cambios" : "Agregar Producto"}
         </Button>
@@ -193,7 +63,6 @@ export const ProductForm = ({ product, onSubmit, onCancel }: ProductFormProps) =
             variant="outline"
             onClick={onCancel}
             className="flex-1"
-            disabled={uploading}
           >
             Cancelar
           </Button>

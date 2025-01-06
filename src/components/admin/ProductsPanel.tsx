@@ -11,6 +11,7 @@ import { useToast } from "@/components/ui/use-toast";
 import { Card } from "@/components/ui/card";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/lib/supabase";
+import { ProductStats } from "./stats/ProductStats";
 
 interface Product {
   id: string;
@@ -41,42 +42,6 @@ export const ProductsPanel = () => {
     },
   });
 
-  const handleEdit = (product: Product) => {
-    setEditingProduct(product);
-  };
-
-  const handleDelete = async (productId: string) => {
-    try {
-      const { error } = await supabase
-        .from('products')
-        .delete()
-        .eq('id', productId);
-
-      if (error) throw error;
-
-      // Create a post about the product deletion
-      await supabase.from('posts').insert({
-        title: 'Producto eliminado',
-        content: `Se ha eliminado un producto del catálogo.`,
-        author: 'Admin',
-      });
-
-      queryClient.invalidateQueries({ queryKey: ['products'] });
-      
-      toast({
-        title: "Producto eliminado",
-        description: "El producto ha sido eliminado correctamente.",
-      });
-    } catch (error) {
-      console.error('Error:', error);
-      toast({
-        title: "Error",
-        description: "No se pudo eliminar el producto.",
-        variant: "destructive",
-      });
-    }
-  };
-
   const handleSubmit = async (formData: FormData) => {
     try {
       const productData = {
@@ -97,7 +62,6 @@ export const ProductsPanel = () => {
 
         if (error) throw error;
 
-        // Create a post about the product update
         await supabase.from('posts').insert({
           title: 'Producto actualizado',
           content: `Se ha actualizado el producto "${productData.name}" en nuestro catálogo.`,
@@ -117,7 +81,6 @@ export const ProductsPanel = () => {
 
         if (error) throw error;
 
-        // Create a post about the new product
         await supabase.from('posts').insert({
           title: 'Nuevo producto agregado',
           content: `Se ha agregado el producto "${productData.name}" a nuestro catálogo.`,
@@ -156,24 +119,7 @@ export const ProductsPanel = () => {
             Resumen de Productos
           </AccordionTrigger>
           <AccordionContent>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-              <div className="bg-black/30 p-4 rounded-lg">
-                <h3 className="text-lg font-medium">Total Productos</h3>
-                <p className="text-2xl font-bold">{products.length}</p>
-              </div>
-              <div className="bg-black/30 p-4 rounded-lg">
-                <h3 className="text-lg font-medium">En Stock</h3>
-                <p className="text-2xl font-bold">
-                  {products.filter(p => p.stock > 0).length}
-                </p>
-              </div>
-              <div className="bg-black/30 p-4 rounded-lg">
-                <h3 className="text-lg font-medium">Sin Stock</h3>
-                <p className="text-2xl font-bold">
-                  {products.filter(p => !p.stock || p.stock === 0).length}
-                </p>
-              </div>
-            </div>
+            <ProductStats products={products} />
           </AccordionContent>
         </AccordionItem>
 
@@ -184,8 +130,37 @@ export const ProductsPanel = () => {
           <AccordionContent>
             <ProductTable
               products={products}
-              onEdit={handleEdit}
-              onDelete={handleDelete}
+              onEdit={setEditingProduct}
+              onDelete={async (productId) => {
+                try {
+                  const { error } = await supabase
+                    .from('products')
+                    .delete()
+                    .eq('id', productId);
+
+                  if (error) throw error;
+
+                  await supabase.from('posts').insert({
+                    title: 'Producto eliminado',
+                    content: `Se ha eliminado un producto del catálogo.`,
+                    author: 'Admin',
+                  });
+
+                  queryClient.invalidateQueries({ queryKey: ['products'] });
+                  
+                  toast({
+                    title: "Producto eliminado",
+                    description: "El producto ha sido eliminado correctamente.",
+                  });
+                } catch (error) {
+                  console.error('Error:', error);
+                  toast({
+                    title: "Error",
+                    description: "No se pudo eliminar el producto.",
+                    variant: "destructive",
+                  });
+                }
+              }}
             />
           </AccordionContent>
         </AccordionItem>
