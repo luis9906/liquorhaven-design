@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/components/ui/use-toast";
 import { Loader2 } from "lucide-react";
+import { supabase } from "@/lib/supabase";
 
 interface ImageUploadFieldProps {
   defaultValue?: string;
@@ -23,18 +24,16 @@ export const ImageUploadField = ({ defaultValue, onImageUploaded }: ImageUploadF
       const formData = new FormData();
       formData.append('file', file);
 
-      const response = await fetch('/api/upload-image', {
-        method: 'POST',
+      const { data, error } = await supabase.functions.invoke('upload-image', {
         body: formData,
       });
 
-      if (!response.ok) {
-        throw new Error('Upload failed');
+      if (error) {
+        throw error;
       }
 
-      const { url } = await response.json();
-      setImagePreview(url);
-      onImageUploaded(url);
+      setImagePreview(data.url);
+      onImageUploaded(data.url);
 
       toast({
         title: "Imagen subida",
