@@ -8,7 +8,17 @@ import {
 } from "@/components/ui/table";
 import { Pencil, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Product } from "@/data/categoryProducts";
+
+interface Product {
+  id: string;
+  name: string;
+  price: number;
+  discount: number;
+  description: string;
+  image: string;
+  category: string;
+  stock: number;
+}
 
 interface ProductTableProps {
   products: Product[];
@@ -24,8 +34,10 @@ export const ProductTable = ({ products, onEdit, onDelete }: ProductTableProps) 
           <TableRow className="border-white/10">
             <TableHead className="text-white">Imagen</TableHead>
             <TableHead className="text-white">Producto</TableHead>
+            <TableHead className="text-white">Categoría</TableHead>
             <TableHead className="text-white">Precio</TableHead>
             <TableHead className="text-white">Descuento</TableHead>
+            <TableHead className="text-white">Stock</TableHead>
             <TableHead className="text-white text-right">Acciones</TableHead>
           </TableRow>
         </TableHeader>
@@ -39,9 +51,18 @@ export const ProductTable = ({ products, onEdit, onDelete }: ProductTableProps) 
                   className="w-12 h-12 object-cover rounded-md"
                 />
               </TableCell>
-              <TableCell className="font-medium text-white">{product.name}</TableCell>
-              <TableCell className="text-white">S/. {product.price}</TableCell>
-              <TableCell className="text-white">S/. {product.discount}</TableCell>
+              <TableCell className="font-medium text-white">
+                <div>
+                  <p className="font-semibold">{product.name}</p>
+                  <p className="text-sm text-gray-400 line-clamp-1">{product.description}</p>
+                </div>
+              </TableCell>
+              <TableCell className="text-white capitalize">{product.category}</TableCell>
+              <TableCell className="text-white">S/. {product.price.toFixed(2)}</TableCell>
+              <TableCell className="text-white">
+                {product.discount > 0 ? `S/. ${product.discount.toFixed(2)}` : '-'}
+              </TableCell>
+              <TableCell className="text-white">{product.stock}</TableCell>
               <TableCell className="text-right">
                 <div className="flex justify-end gap-2">
                   <Button

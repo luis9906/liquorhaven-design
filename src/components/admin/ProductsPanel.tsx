@@ -7,20 +7,37 @@ import {
 import { ProductTable } from "./ProductTable";
 import { ProductForm } from "./ProductForm";
 import { useState } from "react";
-import { Product, categoryProducts } from "@/data/categoryProducts";
 import { useToast } from "@/components/ui/use-toast";
 import { Card } from "@/components/ui/card";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { supabase } from "@/lib/supabase";
+
+interface Product {
+  id: string;
+  name: string;
+  price: number;
+  discount: number;
+  description: string;
+  image: string;
+  category: string;
+  stock: number;
+}
 
 export const ProductsPanel = () => {
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
   const { toast } = useToast();
+  const queryClient = useQueryClient();
 
-  const { data: products = [] } = useQuery<Product[]>({
+  const { data: products = [], isLoading } = useQuery({
     queryKey: ['products'],
     queryFn: async () => {
-      // Simulated API call - replace with actual API call
-      return Object.values(categoryProducts).flat() as Product[];
+      const { data, error } = await supabase
+        .from('products')
+        .select('*')
+        .order('created_at', { ascending: false });
+
+      if (error) throw error;
+      return data as Product[];
     },
   });
 
@@ -28,22 +45,108 @@ export const ProductsPanel = () => {
     setEditingProduct(product);
   };
 
-  const handleDelete = (productId: string) => {
-    toast({
-      title: "Producto eliminado",
-      description: "El producto ha sido eliminado correctamente.",
-    });
+  const handleDelete = async (productId: string) => {
+    try {
+      const { error } = await supabase
+        .from('products')
+        .delete()
+        .eq('id', productId);
+
+      if (error) throw error;
+
+      // Create a post about the product deletion
+      await supabase.from('posts').insert({
+        title: 'Producto eliminado',
+        content: `Se ha eliminado un producto del catálogo.`,
+        author: 'Admin',
+      });
+
+      queryClient.invalidateQueries({ queryKey: ['products'] });
+      
+      toast({
+        title: "Producto eliminado",
+        description: "El producto ha sido eliminado correctamente.",
+      });
+    } catch (error) {
+      console.error('Error:', error);
+      toast({
+        title: "Error",
+        description: "No se pudo eliminar el producto.",
+        variant: "destructive",
+      });
+    }
   };
 
-  const handleSubmit = (formData: FormData) => {
-    toast({
-      title: editingProduct ? "Producto actualizado" : "Producto agregado",
-      description: editingProduct 
-        ? "Los cambios se han guardado correctamente."
-        : "El producto ha sido agregado correctamente.",
-    });
-    setEditingProduct(null);
+  const handleSubmit = async (formData: FormData) => {
+    try {
+      const productData = {
+        name: formData.get('name') as string,
+        price: parseFloat(formData.get('price') as string),
+        discount: parseFloat(formData.get('discount') as string),
+        description: formData.get('description') as string,
+        category: formData.get('category') as string,
+        stock: parseInt(formData.get('stock') as string, 10),
+        image: formData.get('image') as string,
+      };
+
+      if (editingProduct) {
+        const { error } = await supabase
+          .from('products')
+          .update(productData)
+          .eq('id', editingProduct.id);
+
+        if (error) throw error;
+
+        // Create a post about the product update
+        await supabase.from('posts').insert({
+          title: 'Producto actualizado',
+          content: `Se ha actualizado el producto "${productData.name}" en nuestro catálogo.`,
+          author: 'Admin',
+          product_image: productData.image,
+          product_price: productData.price,
+        });
+
+        toast({
+          title: "Producto actualizado",
+          description: "Los cambios se han guardado correctamente.",
+        });
+      } else {
+        const { error } = await supabase
+          .from('products')
+          .insert([productData]);
+
+        if (error) throw error;
+
+        // Create a post about the new product
+        await supabase.from('posts').insert({
+          title: 'Nuevo producto agregado',
+          content: `Se ha agregado el producto "${productData.name}" a nuestro catálogo.`,
+          author: 'Admin',
+          product_image: productData.image,
+          product_price: productData.price,
+        });
+
+        toast({
+          title: "Producto agregado",
+          description: "El producto ha sido agregado correctamente.",
+        });
+      }
+
+      queryClient.invalidateQueries({ queryKey: ['products'] });
+      setEditingProduct(null);
+    } catch (error) {
+      console.error('Error:', error);
+      toast({
+        title: "Error",
+        description: "No se pudo guardar el producto.",
+        variant: "destructive",
+      });
+    }
   };
+
+  if (isLoading) {
+    return <div>Cargando...</div>;
+  }
 
   return (
     <Card className="p-6 bg-black/50 backdrop-blur-sm border-white/10">

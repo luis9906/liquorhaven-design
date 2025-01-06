@@ -16,6 +16,8 @@ export type Database = {
           created_at: string
           date: string
           id: string
+          product_image: string | null
+          product_price: number | null
           title: string
         }
         Insert: {
@@ -24,6 +26,8 @@ export type Database = {
           created_at?: string
           date?: string
           id?: string
+          product_image?: string | null
+          product_price?: number | null
           title: string
         }
         Update: {
@@ -32,6 +36,8 @@ export type Database = {
           created_at?: string
           date?: string
           id?: string
+          product_image?: string | null
+          product_price?: number | null
           title?: string
         }
         Relationships: []
