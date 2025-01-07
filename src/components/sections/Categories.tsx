@@ -55,7 +55,7 @@ const Categories = () => {
       const { data, error } = await supabase
         .from('products')
         .select('*')
-        .limit(25) // Show 25 products per category (5x5 grid)
+        .limit(25)
         .order('created_at', { ascending: false });
 
       if (error) throw error;
@@ -66,7 +66,17 @@ const Categories = () => {
   return (
     <section className="py-12 bg-gradient-to-b from-black/90 via-orange-900/10 to-amber-900/20">
       <div className="container mx-auto px-4">
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 md:gap-6">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+          className="mb-12 text-center"
+        >
+          <h2 className="text-4xl font-bold text-white mb-4">Nuestras Categorías</h2>
+          <p className="text-amber-200/90 text-lg">Explora nuestra amplia selección de bebidas premium</p>
+        </motion.div>
+        
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-3 lg:grid-cols-6 gap-4 md:gap-6">
           {categories.map((category, index) => (
             <Link key={category.id + index} to={`/${category.id}`}>
               <motion.div

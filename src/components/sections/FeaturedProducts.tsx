@@ -14,7 +14,7 @@ const FeaturedProducts = () => {
       const { data, error } = await supabase
         .from('products')
         .select('*')
-        .limit(25) // Increased to show 25 products (5x5 grid)
+        .limit(25)
         .order('created_at', { ascending: false });
 
       if (error) throw error;
@@ -36,7 +36,7 @@ const FeaturedProducts = () => {
           initial={{ opacity: 0, x: -20 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{ duration: 0.5 }}
-          className="mb-16"
+          className="mb-16 text-center"
         >
           <EditableContent
             content="Colección Premium"
@@ -50,9 +50,8 @@ const FeaturedProducts = () => {
           />
         </motion.div>
         
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 md:gap-6 lg:gap-8">
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 md:gap-6">
           {isLoading ? (
-            // Loading skeleton
             Array.from({ length: 25 }).map((_, index) => (
               <div key={index} className="animate-pulse">
                 <div className="bg-white/5 rounded-lg aspect-[3/4]"></div>
@@ -65,6 +64,7 @@ const FeaturedProducts = () => {
                 initial={{ opacity: 0, scale: 0.9 }}
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ duration: 0.5 }}
+                className="h-full"
               >
                 <ProductCard {...product} />
               </motion.div>

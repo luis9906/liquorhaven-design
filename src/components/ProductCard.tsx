@@ -26,10 +26,14 @@ const ProductCard = ({ id, name, image, price, discount }: ProductCardProps) => 
       price: discountedPrice,
       image,
     });
+    
+    toast({
+      title: "Producto agregado",
+      description: "El producto se ha agregado al carrito correctamente.",
+    });
   };
 
   const handleSaveContent = (type: string) => (newContent: string) => {
-    // Here you would typically make an API call to update the product
     toast({
       title: "Contenido actualizado",
       description: `${type} actualizado correctamente.`,
@@ -37,19 +41,19 @@ const ProductCard = ({ id, name, image, price, discount }: ProductCardProps) => 
   };
 
   return (
-    <Card className="bg-white/5 backdrop-blur-sm group hover:bg-white/10 transition-all duration-300 border-0 overflow-hidden">
-      <CardContent className="p-6 relative">
+    <Card className="bg-white/5 backdrop-blur-sm group hover:bg-white/10 transition-all duration-300 border-0 overflow-hidden h-full">
+      <CardContent className="p-4 relative flex flex-col h-full">
         {discount > 0 && (
-          <div className="bg-primary text-white text-sm px-4 py-1 absolute top-4 right-4 rounded-full font-medium z-10">
+          <div className="bg-primary text-white text-sm px-4 py-1 absolute top-2 right-2 rounded-full font-medium z-10">
             -{Math.round((discount / price) * 100)}%
           </div>
         )}
-        <div className="aspect-[3/4] mb-6 overflow-hidden rounded-lg bg-black/20">
+        <div className="aspect-[3/4] mb-4 overflow-hidden rounded-lg bg-black/20 relative">
           <EditableContent
             content={image}
             type="image"
             onSave={handleSaveContent("Imagen")}
-            className="w-full h-full"
+            className="w-full h-full absolute inset-0 z-10"
           />
           <motion.img 
             src={image} 
@@ -59,35 +63,37 @@ const ProductCard = ({ id, name, image, price, discount }: ProductCardProps) => 
             transition={{ duration: 0.3 }}
           />
         </div>
-        <EditableContent
-          content={name}
-          onSave={handleSaveContent("Nombre")}
-          className="text-xl font-semibold text-white mb-3 line-clamp-2"
-        />
-        <div className="flex flex-col gap-4">
-          <div className="flex items-end gap-3">
-            {discount > 0 && (
+        <div className="flex-1 flex flex-col">
+          <EditableContent
+            content={name}
+            onSave={handleSaveContent("Nombre")}
+            className="text-lg font-semibold text-white mb-2 line-clamp-2"
+          />
+          <div className="mt-auto">
+            <div className="flex items-end gap-2 mb-3">
+              {discount > 0 && (
+                <EditableContent
+                  content={`S/. ${price.toFixed(2)}`}
+                  onSave={handleSaveContent("Precio original")}
+                  className="text-gray-400 line-through text-sm"
+                />
+              )}
               <EditableContent
-                content={`S/. ${price.toFixed(2)}`}
-                onSave={handleSaveContent("Precio original")}
-                className="text-gray-400 line-through text-sm"
+                content={`S/. ${discountedPrice.toFixed(2)}`}
+                onSave={handleSaveContent("Precio con descuento")}
+                className="text-white font-bold text-xl"
               />
-            )}
-            <EditableContent
-              content={`S/. ${discountedPrice.toFixed(2)}`}
-              onSave={handleSaveContent("Precio con descuento")}
-              className="text-white font-bold text-2xl"
-            />
+            </div>
+            <Button 
+              className="w-full bg-white hover:bg-white/90 text-black text-base py-5 group"
+              onClick={handleAddToCart}
+            >
+              <span className="flex items-center gap-2">
+                <ShoppingCart className="w-5 h-5 transform group-hover:scale-110 transition-transform" />
+                Agregar al carrito
+              </span>
+            </Button>
           </div>
-          <Button 
-            className="w-full bg-white hover:bg-white/90 text-black text-lg py-6 group"
-            onClick={handleAddToCart}
-          >
-            <span className="flex items-center gap-2">
-              <ShoppingCart className="w-5 h-5 transform group-hover:scale-110 transition-transform" />
-              Agregar al carrito
-            </span>
-          </Button>
         </div>
       </CardContent>
     </Card>
