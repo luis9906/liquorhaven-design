@@ -3,42 +3,42 @@ import { Link } from "react-router-dom";
 
 const categories = [
   {
-    id: "whisky",
+    id: "spirits",
     name: "Whisky",
     description: "Single Malt, Blended, Bourbon y más",
     image: "/lovable-uploads/9da04d7a-366f-43fe-af09-c16fdbd434b7.png",
     color: "from-amber-500 to-orange-600"
   },
   {
-    id: "vinos",
+    id: "wines",
     name: "Vinos",
     description: "Tintos, Blancos, Espumantes",
     image: "/lovable-uploads/9da04d7a-366f-43fe-af09-c16fdbd434b7.png",
     color: "from-red-500 to-orange-700"
   },
   {
-    id: "cerveza",
+    id: "beers",
     name: "Cerveza",
     description: "Artesanales, Importadas, Nacionales",
     image: "/lovable-uploads/9da04d7a-366f-43fe-af09-c16fdbd434b7.png",
     color: "from-yellow-400 to-amber-500"
   },
   {
-    id: "vodka",
+    id: "spirits",
     name: "Vodka",
     description: "Premium, Saborizados, Clásicos",
     image: "/lovable-uploads/9da04d7a-366f-43fe-af09-c16fdbd434b7.png",
     color: "from-orange-400 to-amber-600"
   },
   {
-    id: "ron",
+    id: "spirits",
     name: "Ron",
     description: "Añejos, Blancos, Especiados",
     image: "/lovable-uploads/9da04d7a-366f-43fe-af09-c16fdbd434b7.png",
     color: "from-amber-400 to-yellow-600"
   },
   {
-    id: "gin",
+    id: "spirits",
     name: "Gin",
     description: "London Dry, Premium, Botánicos",
     image: "/lovable-uploads/9da04d7a-366f-43fe-af09-c16fdbd434b7.png",
@@ -52,7 +52,7 @@ const Categories = () => {
       <div className="container mx-auto px-4">
         <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-6 gap-4">
           {categories.map((category, index) => (
-            <Link key={category.id} to={`/${category.id}`}>
+            <Link key={category.id + index} to={`/${category.id}`}>
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}

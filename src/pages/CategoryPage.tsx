@@ -1,12 +1,27 @@
+import { useEffect } from "react";
 import Navbar from "@/components/Navbar";
 import ProductCard from "@/components/ProductCard";
 import { useParams } from "react-router-dom";
-import { categoryProducts, categoryTitles } from "@/data/categoryProducts";
+import { useQuery } from "@tanstack/react-query";
+import { supabase } from "@/lib/supabase";
+import { categoryTitles } from "@/data/categoryProducts";
 
 const CategoryPage = () => {
   const { category } = useParams();
   
-  const products = category ? categoryProducts[category as keyof typeof categoryProducts] || [] : [];
+  const { data: products = [], isLoading } = useQuery({
+    queryKey: ['products', category],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('products')
+        .select('*')
+        .eq('category', category)
+        .order('created_at', { ascending: false });
+      
+      if (error) throw error;
+      return data;
+    },
+  });
 
   return (
     <div className="min-h-screen bg-background">
@@ -15,11 +30,17 @@ const CategoryPage = () => {
         <h2 className="text-3xl font-bold text-white mb-8">
           {category ? categoryTitles[category as keyof typeof categoryTitles] || "Productos" : "Productos"}
         </h2>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-          {products.map((product) => (
-            <ProductCard key={product.id} {...product} />
-          ))}
-        </div>
+        {isLoading ? (
+          <div className="text-white">Cargando productos...</div>
+        ) : products.length === 0 ? (
+          <div className="text-white">No hay productos en esta categoría</div>
+        ) : (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            {products.map((product) => (
+              <ProductCard key={product.id} {...product} />
+            ))}
+          </div>
+        )}
       </div>
     </div>
   );

@@ -52,15 +52,15 @@ export const ProductFormFields = ({ defaultValues }: ProductFormFieldsProps) => 
         />
       </div>
 
-      <Select name="category" defaultValue={defaultValues?.category || "beverages"}>
+      <Select name="category" defaultValue={defaultValues?.category || "spirits"}>
         <SelectTrigger className="bg-white/5 border-white/10 text-white">
           <SelectValue placeholder="Categoría" />
         </SelectTrigger>
         <SelectContent>
-          <SelectItem value="beverages">Bebidas</SelectItem>
-          <SelectItem value="spirits">Licores</SelectItem>
+          <SelectItem value="spirits">Licores (Whisky, Ron, Vodka, Gin)</SelectItem>
           <SelectItem value="wines">Vinos</SelectItem>
           <SelectItem value="beers">Cervezas</SelectItem>
+          <SelectItem value="beverages">Otras Bebidas</SelectItem>
         </SelectContent>
       </Select>
 
