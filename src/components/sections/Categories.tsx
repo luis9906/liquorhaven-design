@@ -1,5 +1,7 @@
 import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
+import { useQuery } from "@tanstack/react-query";
+import { supabase } from "@/lib/supabase";
 
 const categories = [
   {
@@ -47,10 +49,24 @@ const categories = [
 ];
 
 const Categories = () => {
+  const { data: products = [], isLoading } = useQuery({
+    queryKey: ['category-products'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('products')
+        .select('*')
+        .limit(25) // Show 25 products per category (5x5 grid)
+        .order('created_at', { ascending: false });
+
+      if (error) throw error;
+      return data;
+    },
+  });
+
   return (
     <section className="py-12 bg-gradient-to-b from-black/90 via-orange-900/10 to-amber-900/20">
       <div className="container mx-auto px-4">
-        <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-6 gap-4">
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 md:gap-6">
           {categories.map((category, index) => (
             <Link key={category.id + index} to={`/${category.id}`}>
               <motion.div
