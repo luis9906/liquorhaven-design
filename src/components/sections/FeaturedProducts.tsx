@@ -2,40 +2,25 @@ import { motion } from "framer-motion";
 import ProductCard from "@/components/ProductCard";
 import { EditableContent } from "@/components/EditableContent";
 import { useToast } from "@/components/ui/use-toast";
-
-const featuredProducts = [
-  {
-    id: "macallan-18",
-    name: "Macallan 18 Years",
-    image: "/lovable-uploads/9da04d7a-366f-43fe-af09-c16fdbd434b7.png",
-    price: 1274.90,
-    discount: 175.00,
-  },
-  {
-    id: "jw-blue-label",
-    name: "Johnnie Walker Blue Label",
-    image: "/lovable-uploads/9da04d7a-366f-43fe-af09-c16fdbd434b7.png",
-    price: 899.90,
-    discount: 100.00,
-  },
-  {
-    id: "don-perignon-vintage",
-    name: "Don Perignon Vintage 2012",
-    image: "/lovable-uploads/9da04d7a-366f-43fe-af09-c16fdbd434b7.png",
-    price: 1250.00,
-    discount: 150.00,
-  },
-  {
-    id: "hennessy-xo",
-    name: "Hennessy X.O",
-    image: "/lovable-uploads/9da04d7a-366f-43fe-af09-c16fdbd434b7.png",
-    price: 1445.00,
-    discount: 245.00,
-  },
-];
+import { useQuery } from "@tanstack/react-query";
+import { supabase } from "@/lib/supabase";
 
 const FeaturedProducts = () => {
   const { toast } = useToast();
+  
+  const { data: featuredProducts = [], isLoading } = useQuery({
+    queryKey: ['featured-products'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('products')
+        .select('*')
+        .order('created_at', { ascending: false })
+        .limit(8); // Aumentado de 4 a 8 productos
+
+      if (error) throw error;
+      return data;
+    },
+  });
 
   const handleSaveContent = (type: string) => (newContent: string) => {
     toast({
@@ -65,18 +50,22 @@ const FeaturedProducts = () => {
           />
         </motion.div>
         
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
-          {featuredProducts.map((product) => (
-            <motion.div
-              key={product.id}
-              initial={{ opacity: 0, scale: 0.9 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ duration: 0.5 }}
-            >
-              <ProductCard {...product} />
-            </motion.div>
-          ))}
-        </div>
+        {isLoading ? (
+          <div className="text-white text-center">Cargando productos...</div>
+        ) : (
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-4 2xl:grid-cols-8 gap-6">
+            {featuredProducts.map((product) => (
+              <motion.div
+                key={product.id}
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ duration: 0.5 }}
+              >
+                <ProductCard {...product} />
+              </motion.div>
+            ))}
+          </div>
+        )}
       </div>
     </section>
   );
