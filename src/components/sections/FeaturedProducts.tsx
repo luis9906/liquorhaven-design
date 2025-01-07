@@ -33,37 +33,43 @@ const FeaturedProducts = () => {
     <section className="py-24 bg-gradient-to-b from-amber-900/20 via-orange-900/10 to-black/90">
       <div className="container mx-auto px-4">
         <motion.div
-          initial={{ opacity: 0, x: -20 }}
-          animate={{ opacity: 1, x: 0 }}
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
           className="mb-16 text-center"
         >
           <EditableContent
             content="Colección Premium"
             onSave={handleSaveContent("Título")}
-            className="text-5xl font-bold text-white mb-4 tracking-tight"
+            className="text-5xl font-bold text-white mb-6 tracking-tight"
           />
           <EditableContent
             content="Descubre nuestra exclusiva selección de licores de alta gama"
             onSave={handleSaveContent("Subtítulo")}
-            className="text-amber-200/90 text-lg"
+            className="text-amber-200/90 text-xl font-light"
           />
         </motion.div>
         
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 md:gap-6">
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-6">
           {isLoading ? (
             Array.from({ length: 25 }).map((_, index) => (
-              <div key={index} className="animate-pulse">
-                <div className="bg-white/5 rounded-lg aspect-[3/4]"></div>
-              </div>
+              <motion.div
+                key={index}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 0.5, y: 0 }}
+                transition={{ delay: index * 0.05 }}
+                className="animate-pulse"
+              >
+                <div className="bg-white/5 rounded-xl aspect-[3/4]"></div>
+              </motion.div>
             ))
           ) : (
-            featuredProducts.map((product) => (
+            featuredProducts.map((product, index) => (
               <motion.div
                 key={product.id}
-                initial={{ opacity: 0, scale: 0.9 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ duration: 0.5 }}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: index * 0.05, duration: 0.3 }}
                 className="h-full"
               >
                 <ProductCard {...product} />
