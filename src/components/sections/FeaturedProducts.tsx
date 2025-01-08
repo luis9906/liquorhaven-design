@@ -24,14 +24,19 @@ const FeaturedProducts = () => {
       return data;
     },
     retry: 1,
-    onError: (error) => {
-      console.error('Query error:', error);
-      toast({
-        title: "Error",
-        description: "No se pudieron cargar los productos. Por favor, intente nuevamente.",
-        variant: "destructive",
-      });
+    meta: {
+      errorMessage: "No se pudieron cargar los productos. Por favor, intente nuevamente."
     },
+    onSettled: (data, error) => {
+      if (error) {
+        console.error('Query error:', error);
+        toast({
+          title: "Error",
+          description: "No se pudieron cargar los productos. Por favor, intente nuevamente.",
+          variant: "destructive",
+        });
+      }
+    }
   });
 
   const handleSaveContent = (type: string) => (newContent: string) => {
