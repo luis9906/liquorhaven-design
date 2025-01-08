@@ -7,11 +7,12 @@ import {
 import { ProductTable } from "./ProductTable";
 import { ProductForm } from "./ProductForm";
 import { useState } from "react";
-import { useToast } from "@/components/ui/use-toast";
+import { useToast } from "@/hooks/use-toast";
 import { Card } from "@/components/ui/card";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/lib/supabase";
 import { ProductStats } from "./stats/ProductStats";
+import { useAuth } from "@/context/AuthContext";
 
 interface Product {
   id: string;
@@ -28,6 +29,7 @@ export const ProductsPanel = () => {
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
   const { toast } = useToast();
   const queryClient = useQueryClient();
+  const { user } = useAuth();
 
   const { data: products = [], isLoading } = useQuery({
     queryKey: ['products'],
@@ -47,15 +49,26 @@ export const ProductsPanel = () => {
 
   const handleSubmit = async (formData: FormData) => {
     try {
+      if (!user) {
+        toast({
+          title: "Error",
+          description: "Debes estar autenticado para realizar esta acción.",
+          variant: "destructive",
+        });
+        return;
+      }
+
       const productData = {
         name: formData.get('name') as string,
         price: parseFloat(formData.get('price') as string),
-        discount: parseFloat(formData.get('discount') as string),
+        discount: parseFloat(formData.get('discount') as string) || 0,
         description: formData.get('description') as string,
         category: formData.get('category') as string,
-        stock: parseInt(formData.get('stock') as string, 10),
+        stock: parseInt(formData.get('stock') as string, 10) || 0,
         image: formData.get('image') as string,
       };
+
+      console.log('Sending product data:', productData);
 
       if (editingProduct) {
         const { error } = await supabase
@@ -63,7 +76,10 @@ export const ProductsPanel = () => {
           .update(productData)
           .eq('id', editingProduct.id);
 
-        if (error) throw error;
+        if (error) {
+          console.error('Error updating product:', error);
+          throw error;
+        }
 
         await supabase.from('posts').insert({
           title: 'Producto actualizado',
@@ -82,7 +98,10 @@ export const ProductsPanel = () => {
           .from('products')
           .insert([productData]);
 
-        if (error) throw error;
+        if (error) {
+          console.error('Error creating product:', error);
+          throw error;
+        }
 
         await supabase.from('posts').insert({
           title: 'Nuevo producto agregado',
@@ -100,11 +119,11 @@ export const ProductsPanel = () => {
 
       queryClient.invalidateQueries({ queryKey: ['products'] });
       setEditingProduct(null);
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error:', error);
       toast({
         title: "Error",
-        description: "No se pudo guardar el producto.",
+        description: error.message || "No se pudo guardar el producto.",
         variant: "destructive",
       });
     }
@@ -155,11 +174,11 @@ export const ProductsPanel = () => {
                     title: "Producto eliminado",
                     description: "El producto ha sido eliminado correctamente.",
                   });
-                } catch (error) {
+                } catch (error: any) {
                   console.error('Error:', error);
                   toast({
                     title: "Error",
-                    description: "No se pudo eliminar el producto.",
+                    description: error.message || "No se pudo eliminar el producto.",
                     variant: "destructive",
                   });
                 }

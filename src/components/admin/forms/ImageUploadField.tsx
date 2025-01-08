@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Input } from "@/components/ui/input";
-import { useToast } from "@/components/ui/use-toast";
+import { useToast } from "@/hooks/use-toast";
 import { Loader2 } from "lucide-react";
 import { supabase } from "@/lib/supabase";
 
@@ -20,30 +20,37 @@ export const ImageUploadField = ({ defaultValue, onImageUploaded }: ImageUploadF
       if (!file) return;
 
       setUploading(true);
-      
-      const formData = new FormData();
-      formData.append('file', file);
 
-      const { data, error } = await supabase.functions.invoke('upload-image', {
-        body: formData,
-      });
+      // Subir directamente al bucket de storage
+      const fileExt = file.name.split('.').pop();
+      const fileName = `${Math.random()}.${fileExt}`;
+      const filePath = `${fileName}`;
 
-      if (error) {
-        throw error;
+      const { error: uploadError, data } = await supabase.storage
+        .from('products')
+        .upload(filePath, file);
+
+      if (uploadError) {
+        throw uploadError;
       }
 
-      setImagePreview(data.url);
-      onImageUploaded(data.url);
+      // Obtener la URL pública
+      const { data: { publicUrl } } = supabase.storage
+        .from('products')
+        .getPublicUrl(filePath);
+
+      setImagePreview(publicUrl);
+      onImageUploaded(publicUrl);
 
       toast({
         title: "Imagen subida",
         description: "La imagen se ha subido correctamente.",
       });
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error:', error);
       toast({
         title: "Error",
-        description: "No se pudo subir la imagen.",
+        description: error.message || "No se pudo subir la imagen.",
         variant: "destructive",
       });
     } finally {

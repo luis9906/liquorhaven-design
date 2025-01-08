@@ -22,14 +22,20 @@ interface ProductFormProps {
 
 export const ProductForm = ({ product, onSubmit, onCancel }: ProductFormProps) => {
   const [imageUrl, setImageUrl] = useState<string | null>(product?.image || null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    const formData = new FormData(e.currentTarget);
-    if (imageUrl) {
-      formData.set('image', imageUrl);
+    setIsSubmitting(true);
+    try {
+      const formData = new FormData(e.currentTarget);
+      if (imageUrl) {
+        formData.set('image', imageUrl);
+      }
+      await onSubmit(formData);
+    } finally {
+      setIsSubmitting(false);
     }
-    onSubmit(formData);
   };
 
   return (
@@ -54,8 +60,9 @@ export const ProductForm = ({ product, onSubmit, onCancel }: ProductFormProps) =
         <Button 
           type="submit" 
           className="flex-1 bg-white text-black hover:bg-white/90"
+          disabled={isSubmitting}
         >
-          {product ? "Guardar Cambios" : "Agregar Producto"}
+          {isSubmitting ? "Guardando..." : (product ? "Guardar Cambios" : "Agregar Producto")}
         </Button>
         {onCancel && (
           <Button 
@@ -63,6 +70,7 @@ export const ProductForm = ({ product, onSubmit, onCancel }: ProductFormProps) =
             variant="outline"
             onClick={onCancel}
             className="flex-1"
+            disabled={isSubmitting}
           >
             Cancelar
           </Button>
