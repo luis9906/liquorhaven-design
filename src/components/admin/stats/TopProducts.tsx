@@ -2,8 +2,16 @@ import { Card } from "@/components/ui/card";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/lib/supabase";
 
+interface ProductView {
+  product_id: string;
+  products: {
+    name: string;
+    price: number;
+  } | null;
+}
+
 export const TopProducts = () => {
-  const { data: products } = useQuery({
+  const { data: products } = useQuery<ProductView[]>({
     queryKey: ['top-products'],
     queryFn: async () => {
       const { data: views } = await supabase
@@ -11,7 +19,7 @@ export const TopProducts = () => {
         .select('product_id, products(name, price)')
         .limit(5);
       
-      return views;
+      return views || [];
     },
   });
 
