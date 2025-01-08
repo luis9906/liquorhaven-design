@@ -23,7 +23,7 @@ export const checkAdminExists = async () => {
       .from('profiles')
       .select('user_id')
       .eq('role', 'admin')
-      .maybeSingle(); // Using maybeSingle instead of single
+      .maybeSingle();
 
     if (error) throw error;
     return data;
@@ -34,6 +34,6 @@ export const checkAdminExists = async () => {
 };
 
 export const adminCredentials = {
-  email: "admin@licoreria247.pe", // Changed to a valid Peruvian domain
+  email: "admin@licoreria247.com",
   password: "Patines12345="
 };
