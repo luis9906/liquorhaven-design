@@ -7,7 +7,7 @@ interface ProductView {
   products: {
     name: string;
     price: number;
-  } | null;
+  };
 }
 
 export const TopProducts = () => {
@@ -23,7 +23,16 @@ export const TopProducts = () => {
         throw error;
       }
 
-      return (views as ProductView[]) || [];
+      // Transform the data to match our ProductView interface
+      const transformedViews = views?.map((view: any) => ({
+        product_id: view.product_id,
+        products: {
+          name: view.products?.name || '',
+          price: view.products?.price || 0
+        }
+      })) || [];
+
+      return transformedViews;
     },
   });
 
@@ -33,8 +42,8 @@ export const TopProducts = () => {
       <div className="space-y-4">
         {products?.map((view) => (
           <div key={view.product_id} className="flex items-center justify-between p-3 rounded-lg bg-white/5">
-            <p className="font-medium">{view.products?.name}</p>
-            <p className="text-sm">S/. {view.products?.price}</p>
+            <p className="font-medium">{view.products.name}</p>
+            <p className="text-sm">S/. {view.products.price}</p>
           </div>
         ))}
       </div>
