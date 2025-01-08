@@ -52,17 +52,18 @@ export const AuthModal = () => {
     e.preventDefault();
     try {
       if (userType === "admin") {
-        const adminEmail = "admin@247licoreria.com"; // Changed to a more valid domain
+        const adminEmail = "admin@247licoreria.com";
         if (password === "Patines12345=") {
-          // First try to sign in
-          const { data: signInData, error: signInError } = await supabase.auth.signInWithPassword({
-            email: adminEmail,
-            password: "Patines12345="
-          });
+          // First check if admin exists
+          const { data: adminData } = await supabase
+            .from('profiles')
+            .select('user_id')
+            .eq('role', 'admin')
+            .single();
 
-          if (signInError && signInError.message === "Invalid login credentials") {
-            // If sign in fails because user doesn't exist, create the admin account
-            console.log("Admin account doesn't exist, creating...");
+          if (!adminData) {
+            // Admin doesn't exist, create account
+            console.log("Creating new admin account...");
             const { data: signUpData, error: signUpError } = await supabase.auth.signUp({
               email: adminEmail,
               password: "Patines12345="
@@ -83,9 +84,23 @@ export const AuthModal = () => {
                 title: "¡Cuenta de administrador creada!",
                 description: "Se ha creado la cuenta de administrador correctamente.",
               });
+              setIsOpen(false);
+              return;
             }
-          } else if (signInData.user) {
-            // Successful sign in
+          }
+
+          // Try to sign in (either existing admin or newly created)
+          const { data: signInData, error: signInError } = await supabase.auth.signInWithPassword({
+            email: adminEmail,
+            password: "Patines12345="
+          });
+
+          if (signInError) {
+            console.error('Admin signin error:', signInError);
+            throw signInError;
+          }
+
+          if (signInData.user) {
             await createAdminProfile(signInData.user.id);
             setUser({
               email: adminEmail,
@@ -95,8 +110,8 @@ export const AuthModal = () => {
               title: "¡Bienvenido Administrador!",
               description: "Has iniciado sesión como administrador.",
             });
+            setIsOpen(false);
           }
-          setIsOpen(false);
         } else {
           throw new Error("Contraseña de administrador incorrecta");
         }
