@@ -30,48 +30,64 @@ export const AuthModal = () => {
     setIsSubmitting(true);
     try {
       if (userType === "admin") {
+        // Verificar si la contraseña coincide con la del administrador
         if (password !== adminCredentials.password) {
           throw new Error("Contraseña de administrador incorrecta");
         }
 
-        // Primero intentamos crear la cuenta de admin si no existe
-        const { data: signUpData, error: signUpError } = await supabase.auth.signUp({
-          email: adminCredentials.email,
-          password: adminCredentials.password,
-        });
-
-        if (signUpError && !signUpError.message.includes('User already registered')) {
-          throw signUpError;
-        }
-
-        // Ahora intentamos iniciar sesión
+        // Intentar iniciar sesión como administrador
         const { data: signInData, error: signInError } = await supabase.auth.signInWithPassword({
           email: adminCredentials.email,
           password: adminCredentials.password,
         });
 
         if (signInError) {
-          throw signInError;
-        }
+          // Si el error es de credenciales inválidas, intentamos crear la cuenta
+          if (signInError.message.includes('Invalid login credentials')) {
+            const { data: signUpData, error: signUpError } = await supabase.auth.signUp({
+              email: adminCredentials.email,
+              password: adminCredentials.password,
+            });
 
-        if (signInData.user) {
-          // Verificamos si el perfil de admin ya existe, si no, lo creamos
-          const adminProfile = await checkAdminExists();
-          if (!adminProfile) {
+            if (signUpError) throw signUpError;
+
+            // Después de crear la cuenta, intentamos iniciar sesión nuevamente
+            const { data: newSignInData, error: newSignInError } = await supabase.auth.signInWithPassword({
+              email: adminCredentials.email,
+              password: adminCredentials.password,
+            });
+
+            if (newSignInError) throw newSignInError;
+
+            if (newSignInData.user) {
+              const adminExists = await checkAdminExists();
+              if (!adminExists) {
+                await createAdminProfile(newSignInData.user.id);
+              }
+              setUser({
+                email: adminCredentials.email,
+                isAdmin: true
+              });
+            }
+          } else {
+            throw signInError;
+          }
+        } else if (signInData.user) {
+          const adminExists = await checkAdminExists();
+          if (!adminExists) {
             await createAdminProfile(signInData.user.id);
           }
-
           setUser({
             email: adminCredentials.email,
             isAdmin: true
           });
-          
-          toast({
-            title: "¡Bienvenido Administrador!",
-            description: "Has iniciado sesión como administrador.",
-          });
-          setIsOpen(false);
         }
+
+        toast({
+          title: "¡Bienvenido Administrador!",
+          description: "Has iniciado sesión como administrador.",
+        });
+        setIsOpen(false);
       } else {
         if (isLogin) {
           const { data, error } = await supabase.auth.signInWithPassword({
