@@ -34,52 +34,38 @@ export const AuthModal = () => {
           throw new Error("Contraseña de administrador incorrecta");
         }
 
+        // Primero intentamos crear la cuenta de admin si no existe
+        const { data: signUpData, error: signUpError } = await supabase.auth.signUp({
+          email: adminCredentials.email,
+          password: adminCredentials.password,
+        });
+
+        if (signUpError && !signUpError.message.includes('User already registered')) {
+          throw signUpError;
+        }
+
+        // Ahora intentamos iniciar sesión
         const { data: signInData, error: signInError } = await supabase.auth.signInWithPassword({
           email: adminCredentials.email,
           password: adminCredentials.password,
         });
 
         if (signInError) {
-          // Si el error es porque el admin no existe, lo creamos
-          if (signInError.message.includes('Invalid login credentials')) {
-            console.log("Creando cuenta de administrador...");
-            const { data: signUpData, error: signUpError } = await supabase.auth.signUp({
-              email: adminCredentials.email,
-              password: adminCredentials.password,
-            });
+          throw signInError;
+        }
 
-            if (signUpError) {
-              if (signUpError.message.includes('rate_limit')) {
-                toast({
-                  title: "Error",
-                  description: "Por favor espera un momento antes de intentar nuevamente.",
-                  variant: "destructive",
-                });
-                return;
-              }
-              throw signUpError;
-            }
-
-            if (signUpData.user) {
-              await createAdminProfile(signUpData.user.id);
-              setUser({
-                email: adminCredentials.email,
-                isAdmin: true
-              });
-              toast({
-                title: "¡Cuenta de administrador creada!",
-                description: "Se ha creado la cuenta de administrador correctamente.",
-              });
-              setIsOpen(false);
-            }
-          } else {
-            throw signInError;
+        if (signInData.user) {
+          // Verificamos si el perfil de admin ya existe, si no, lo creamos
+          const adminProfile = await checkAdminExists();
+          if (!adminProfile) {
+            await createAdminProfile(signInData.user.id);
           }
-        } else if (signInData.user) {
+
           setUser({
             email: adminCredentials.email,
             isAdmin: true
           });
+          
           toast({
             title: "¡Bienvenido Administrador!",
             description: "Has iniciado sesión como administrador.",
