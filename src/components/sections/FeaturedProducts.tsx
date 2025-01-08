@@ -8,7 +8,7 @@ import { supabase } from "@/lib/supabase";
 const FeaturedProducts = () => {
   const { toast } = useToast();
 
-  const { data: featuredProducts = [], isLoading } = useQuery({
+  const { data: featuredProducts = [], isLoading, error } = useQuery({
     queryKey: ['featured-products'],
     queryFn: async () => {
       const { data, error } = await supabase
@@ -17,8 +17,20 @@ const FeaturedProducts = () => {
         .limit(25)
         .order('created_at', { ascending: false });
 
-      if (error) throw error;
+      if (error) {
+        console.error('Error fetching products:', error);
+        throw error;
+      }
       return data;
+    },
+    retry: 1,
+    onError: (error) => {
+      console.error('Query error:', error);
+      toast({
+        title: "Error",
+        description: "No se pudieron cargar los productos. Por favor, intente nuevamente.",
+        variant: "destructive",
+      });
     },
   });
 
@@ -28,6 +40,14 @@ const FeaturedProducts = () => {
       description: `${type} actualizado correctamente.`,
     });
   };
+
+  if (error) {
+    return (
+      <div className="py-24 text-center text-white">
+        <p>No se pudieron cargar los productos. Por favor, intente nuevamente.</p>
+      </div>
+    );
+  }
 
   return (
     <section className="py-24 bg-gradient-to-b from-amber-900/20 via-orange-900/10 to-black/90">
