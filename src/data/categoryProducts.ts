@@ -5,8 +5,8 @@ export interface Product {
   price: number;
   discount: number;
   stock: number;
-  description?: string;
-  category?: string;
+  description: string; // Changed from optional to required
+  category: string; // Changed from optional to required
 }
 
 export const categoryTitles = {

@@ -2,17 +2,7 @@ import { Button } from "@/components/ui/button";
 import { useState } from "react";
 import { ImageUploadField } from "./forms/ImageUploadField";
 import { ProductFormFields } from "./forms/ProductFormFields";
-
-interface Product {
-  id: string;
-  name: string;
-  price: number;
-  discount: number;
-  description: string;
-  image: string;
-  category: string;
-  stock: number;
-}
+import { Product } from "@/data/categoryProducts"; // Import the shared interface
 
 interface ProductFormProps {
   product?: Product | null;

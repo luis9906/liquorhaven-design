@@ -8,17 +8,7 @@ import {
 } from "@/components/ui/table";
 import { Pencil, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-
-interface Product {
-  id: string;
-  name: string;
-  price: number;
-  discount: number;
-  description: string;
-  image: string;
-  category: string;
-  stock: number;
-}
+import { Product } from "@/data/categoryProducts"; // Import the shared interface
 
 interface ProductTableProps {
   products: Product[];
