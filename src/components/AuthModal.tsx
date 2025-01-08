@@ -29,16 +29,21 @@ export const AuthModal = () => {
   const { setUser } = useAuth();
 
   const createAdminProfile = async (userId: string) => {
-    const { error } = await supabase
-      .from('profiles')
-      .upsert({
-        user_id: userId,
-        role: 'admin',
-        status: 'active'
-      });
+    try {
+      const { error } = await supabase
+        .from('profiles')
+        .upsert({
+          user_id: userId,
+          role: 'admin',
+          status: 'active'
+        });
 
-    if (error) {
-      console.error('Error creating admin profile:', error);
+      if (error) {
+        console.error('Error creating admin profile:', error);
+        throw error;
+      }
+    } catch (error) {
+      console.error('Error in createAdminProfile:', error);
       throw error;
     }
   };
@@ -47,38 +52,50 @@ export const AuthModal = () => {
     e.preventDefault();
     try {
       if (userType === "admin") {
+        const adminEmail = "admin@247licoreria.com"; // Changed to a more valid domain
         if (password === "Patines12345=") {
-          // Create a new admin user if it doesn't exist
-          const { data: existingUser, error: checkError } = await supabase.auth.signInWithPassword({
-            email: "admin@licoreria247.com",
+          // First try to sign in
+          const { data: signInData, error: signInError } = await supabase.auth.signInWithPassword({
+            email: adminEmail,
             password: "Patines12345="
           });
 
-          if (checkError) {
-            // If admin doesn't exist, create it
-            const { data: newUser, error: signUpError } = await supabase.auth.signUp({
-              email: "admin@licoreria247.com",
+          if (signInError && signInError.message === "Invalid login credentials") {
+            // If sign in fails because user doesn't exist, create the admin account
+            console.log("Admin account doesn't exist, creating...");
+            const { data: signUpData, error: signUpError } = await supabase.auth.signUp({
+              email: adminEmail,
               password: "Patines12345="
             });
 
-            if (signUpError) throw signUpError;
-            if (newUser.user) {
-              await createAdminProfile(newUser.user.id);
+            if (signUpError) {
+              console.error('Admin signup error:', signUpError);
+              throw signUpError;
             }
-          } else if (existingUser.user) {
-            // Ensure profile exists for existing admin
-            await createAdminProfile(existingUser.user.id);
+
+            if (signUpData.user) {
+              await createAdminProfile(signUpData.user.id);
+              setUser({
+                email: adminEmail,
+                isAdmin: true
+              });
+              toast({
+                title: "¡Cuenta de administrador creada!",
+                description: "Se ha creado la cuenta de administrador correctamente.",
+              });
+            }
+          } else if (signInData.user) {
+            // Successful sign in
+            await createAdminProfile(signInData.user.id);
+            setUser({
+              email: adminEmail,
+              isAdmin: true
+            });
+            toast({
+              title: "¡Bienvenido Administrador!",
+              description: "Has iniciado sesión como administrador.",
+            });
           }
-
-          setUser({
-            email: "admin@licoreria247.com",
-            isAdmin: true
-          });
-
-          toast({
-            title: "¡Bienvenido Administrador!",
-            description: "Has iniciado sesión como administrador.",
-          });
           setIsOpen(false);
         } else {
           throw new Error("Contraseña de administrador incorrecta");
