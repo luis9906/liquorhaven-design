@@ -14,12 +14,16 @@ export const TopProducts = () => {
   const { data: products } = useQuery<ProductView[]>({
     queryKey: ['top-products'],
     queryFn: async () => {
-      const { data: views } = await supabase
+      const { data: views, error } = await supabase
         .from('product_views')
         .select('product_id, products(name, price)')
         .limit(5);
-      
-      return views || [];
+
+      if (error) {
+        throw error;
+      }
+
+      return (views as ProductView[]) || [];
     },
   });
 
