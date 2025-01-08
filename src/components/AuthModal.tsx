@@ -6,18 +6,12 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { useState } from "react";
 import { useToast } from "@/components/ui/use-toast";
 import { supabase } from "@/lib/supabase";
 import { useAuth } from "@/context/AuthContext";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+import { AuthForm } from "./auth/AuthForm";
+import { adminCredentials, createAdminProfile, checkAdminExists } from "@/lib/auth";
 
 export const AuthModal = () => {
   const [isLogin, setIsLogin] = useState(true);
@@ -28,46 +22,16 @@ export const AuthModal = () => {
   const { toast } = useToast();
   const { setUser } = useAuth();
 
-  const createAdminProfile = async (userId: string) => {
-    try {
-      const { error } = await supabase
-        .from('profiles')
-        .upsert({
-          user_id: userId,
-          role: 'admin',
-          status: 'active'
-        });
-
-      if (error) {
-        console.error('Error creating admin profile:', error);
-        throw error;
-      }
-    } catch (error) {
-      console.error('Error in createAdminProfile:', error);
-      throw error;
-    }
-  };
-
   const handleAuth = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
       if (userType === "admin") {
-        const adminEmail = "admin@247licoreria.com";
-        if (password === "Patines12345=") {
-          // First check if admin exists
-          const { data: adminData } = await supabase
-            .from('profiles')
-            .select('user_id')
-            .eq('role', 'admin')
-            .single();
+        if (password === adminCredentials.password) {
+          const adminData = await checkAdminExists();
 
           if (!adminData) {
-            // Admin doesn't exist, create account
             console.log("Creating new admin account...");
-            const { data: signUpData, error: signUpError } = await supabase.auth.signUp({
-              email: adminEmail,
-              password: "Patines12345="
-            });
+            const { data: signUpData, error: signUpError } = await supabase.auth.signUp(adminCredentials);
 
             if (signUpError) {
               console.error('Admin signup error:', signUpError);
@@ -77,7 +41,7 @@ export const AuthModal = () => {
             if (signUpData.user) {
               await createAdminProfile(signUpData.user.id);
               setUser({
-                email: adminEmail,
+                email: adminCredentials.email,
                 isAdmin: true
               });
               toast({
@@ -89,11 +53,7 @@ export const AuthModal = () => {
             }
           }
 
-          // Try to sign in (either existing admin or newly created)
-          const { data: signInData, error: signInError } = await supabase.auth.signInWithPassword({
-            email: adminEmail,
-            password: "Patines12345="
-          });
+          const { data: signInData, error: signInError } = await supabase.auth.signInWithPassword(adminCredentials);
 
           if (signInError) {
             console.error('Admin signin error:', signInError);
@@ -103,7 +63,7 @@ export const AuthModal = () => {
           if (signInData.user) {
             await createAdminProfile(signInData.user.id);
             setUser({
-              email: adminEmail,
+              email: adminCredentials.email,
               isAdmin: true
             });
             toast({
@@ -161,54 +121,17 @@ export const AuthModal = () => {
         <DialogHeader>
           <DialogTitle>{isLogin ? "Iniciar Sesión" : "Registrarse"}</DialogTitle>
         </DialogHeader>
-        <form onSubmit={handleAuth} className="space-y-4">
-          <Select
-            value={userType}
-            onValueChange={setUserType}
-          >
-            <SelectTrigger className="bg-white/5 border-white/10 text-white">
-              <SelectValue placeholder="Selecciona tipo de usuario" />
-            </SelectTrigger>
-            <SelectContent className="bg-black border-white/10">
-              <SelectItem value="user">Usuario 24/7</SelectItem>
-              <SelectItem value="admin">Administrador</SelectItem>
-            </SelectContent>
-          </Select>
-
-          {userType === "user" && (
-            <Input
-              type="email"
-              placeholder="Email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              className="bg-white/5 border-white/10 text-white"
-            />
-          )}
-          
-          <Input
-            type="password"
-            placeholder="Contraseña"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            className="bg-white/5 border-white/10 text-white"
-          />
-          
-          <div className="flex flex-col gap-2">
-            <Button type="submit" className="w-full bg-white text-black hover:bg-white/90">
-              {isLogin ? "Iniciar Sesión" : "Registrarse"}
-            </Button>
-            {userType === "user" && (
-              <Button
-                type="button"
-                variant="ghost"
-                onClick={() => setIsLogin(!isLogin)}
-                className="text-white hover:text-white/90"
-              >
-                {isLogin ? "¿No tienes cuenta? Regístrate" : "¿Ya tienes cuenta? Inicia sesión"}
-              </Button>
-            )}
-          </div>
-        </form>
+        <AuthForm
+          isLogin={isLogin}
+          userType={userType}
+          email={email}
+          password={password}
+          onUserTypeChange={setUserType}
+          onEmailChange={(e) => setEmail(e.target.value)}
+          onPasswordChange={(e) => setPassword(e.target.value)}
+          onSubmit={handleAuth}
+          onToggleMode={() => setIsLogin(!isLogin)}
+        />
       </DialogContent>
     </Dialog>
   );
