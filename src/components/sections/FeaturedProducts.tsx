@@ -24,20 +24,22 @@ const FeaturedProducts = () => {
       return data;
     },
     retry: 1,
+    gcTime: 1000 * 60 * 5, // 5 minutes
+    staleTime: 1000 * 60 * 1, // 1 minute
     meta: {
       errorMessage: "No se pudieron cargar los productos. Por favor, intente nuevamente."
-    },
-    onSettled: (data, error) => {
-      if (error) {
-        console.error('Query error:', error);
-        toast({
-          title: "Error",
-          description: "No se pudieron cargar los productos. Por favor, intente nuevamente.",
-          variant: "destructive",
-        });
-      }
     }
   });
+
+  // Show toast when there's an error
+  if (error) {
+    console.error('Query error:', error);
+    toast({
+      title: "Error",
+      description: "No se pudieron cargar los productos. Por favor, intente nuevamente.",
+      variant: "destructive",
+    });
+  }
 
   const handleSaveContent = (type: string) => (newContent: string) => {
     toast({
