@@ -19,11 +19,15 @@ export const AuthModal = () => {
   const [password, setPassword] = useState("");
   const [userType, setUserType] = useState("user");
   const [isOpen, setIsOpen] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const { toast } = useToast();
   const { setUser } = useAuth();
 
   const handleAuth = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (isSubmitting) return;
+    
+    setIsSubmitting(true);
     try {
       if (userType === "admin") {
         if (password === adminCredentials.password) {
@@ -34,7 +38,14 @@ export const AuthModal = () => {
             const { data: signUpData, error: signUpError } = await supabase.auth.signUp(adminCredentials);
 
             if (signUpError) {
-              console.error('Admin signup error:', signUpError);
+              if (signUpError.message.includes('rate_limit')) {
+                toast({
+                  title: "Error",
+                  description: "Por favor espera un momento antes de intentar nuevamente.",
+                  variant: "destructive",
+                });
+                return;
+              }
               throw signUpError;
             }
 
@@ -49,28 +60,23 @@ export const AuthModal = () => {
                 description: "Se ha creado la cuenta de administrador correctamente.",
               });
               setIsOpen(false);
-              return;
             }
-          }
+          } else {
+            const { data: signInData, error: signInError } = await supabase.auth.signInWithPassword(adminCredentials);
 
-          const { data: signInData, error: signInError } = await supabase.auth.signInWithPassword(adminCredentials);
+            if (signInError) throw signInError;
 
-          if (signInError) {
-            console.error('Admin signin error:', signInError);
-            throw signInError;
-          }
-
-          if (signInData.user) {
-            await createAdminProfile(signInData.user.id);
-            setUser({
-              email: adminCredentials.email,
-              isAdmin: true
-            });
-            toast({
-              title: "¡Bienvenido Administrador!",
-              description: "Has iniciado sesión como administrador.",
-            });
-            setIsOpen(false);
+            if (signInData.user) {
+              setUser({
+                email: adminCredentials.email,
+                isAdmin: true
+              });
+              toast({
+                title: "¡Bienvenido Administrador!",
+                description: "Has iniciado sesión como administrador.",
+              });
+              setIsOpen(false);
+            }
           }
         } else {
           throw new Error("Contraseña de administrador incorrecta");
@@ -92,7 +98,17 @@ export const AuthModal = () => {
             email,
             password,
           });
-          if (error) throw error;
+          if (error) {
+            if (error.message.includes('rate_limit')) {
+              toast({
+                title: "Error",
+                description: "Por favor espera un momento antes de intentar nuevamente.",
+                variant: "destructive",
+              });
+              return;
+            }
+            throw error;
+          }
           toast({
             title: "¡Registro exitoso!",
             description: "Por favor verifica tu correo electrónico.",
@@ -107,6 +123,8 @@ export const AuthModal = () => {
         description: error.message,
         variant: "destructive",
       });
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
