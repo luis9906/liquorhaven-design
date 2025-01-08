@@ -34,6 +34,5 @@ export const checkAdminExists = async () => {
 };
 
 export const adminCredentials = {
-  email: "admin@licoreria247.com",
   password: "Patines12345="
 };
