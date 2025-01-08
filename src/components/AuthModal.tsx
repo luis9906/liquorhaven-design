@@ -28,15 +28,53 @@ export const AuthModal = () => {
   const { toast } = useToast();
   const { setUser } = useAuth();
 
+  const createAdminProfile = async (userId: string) => {
+    const { error } = await supabase
+      .from('profiles')
+      .upsert({
+        user_id: userId,
+        role: 'admin',
+        status: 'active'
+      });
+
+    if (error) {
+      console.error('Error creating admin profile:', error);
+      throw error;
+    }
+  };
+
   const handleAuth = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
       if (userType === "admin") {
         if (password === "Patines12345=") {
+          // Create a new admin user if it doesn't exist
+          const { data: existingUser, error: checkError } = await supabase.auth.signInWithPassword({
+            email: "admin@licoreria247.com",
+            password: "Patines12345="
+          });
+
+          if (checkError) {
+            // If admin doesn't exist, create it
+            const { data: newUser, error: signUpError } = await supabase.auth.signUp({
+              email: "admin@licoreria247.com",
+              password: "Patines12345="
+            });
+
+            if (signUpError) throw signUpError;
+            if (newUser.user) {
+              await createAdminProfile(newUser.user.id);
+            }
+          } else if (existingUser.user) {
+            // Ensure profile exists for existing admin
+            await createAdminProfile(existingUser.user.id);
+          }
+
           setUser({
             email: "admin@licoreria247.com",
             isAdmin: true
           });
+
           toast({
             title: "¡Bienvenido Administrador!",
             description: "Has iniciado sesión como administrador.",
@@ -71,6 +109,7 @@ export const AuthModal = () => {
         }
       }
     } catch (error: any) {
+      console.error('Auth error:', error);
       toast({
         title: "Error",
         description: error.message,
