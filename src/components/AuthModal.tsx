@@ -30,12 +30,23 @@ export const AuthModal = () => {
     setIsSubmitting(true);
     try {
       if (userType === "admin") {
-        if (password === adminCredentials.password) {
-          const adminData = await checkAdminExists();
+        if (password !== adminCredentials.password) {
+          throw new Error("Contraseña de administrador incorrecta");
+        }
 
-          if (!adminData) {
-            console.log("Creating new admin account...");
-            const { data: signUpData, error: signUpError } = await supabase.auth.signUp(adminCredentials);
+        const { data: signInData, error: signInError } = await supabase.auth.signInWithPassword({
+          email: adminCredentials.email,
+          password: adminCredentials.password,
+        });
+
+        if (signInError) {
+          // Si el error es porque el admin no existe, lo creamos
+          if (signInError.message.includes('Invalid login credentials')) {
+            console.log("Creando cuenta de administrador...");
+            const { data: signUpData, error: signUpError } = await supabase.auth.signUp({
+              email: adminCredentials.email,
+              password: adminCredentials.password,
+            });
 
             if (signUpError) {
               if (signUpError.message.includes('rate_limit')) {
@@ -62,28 +73,22 @@ export const AuthModal = () => {
               setIsOpen(false);
             }
           } else {
-            const { data: signInData, error: signInError } = await supabase.auth.signInWithPassword(adminCredentials);
-
-            if (signInError) throw signInError;
-
-            if (signInData.user) {
-              setUser({
-                email: adminCredentials.email,
-                isAdmin: true
-              });
-              toast({
-                title: "¡Bienvenido Administrador!",
-                description: "Has iniciado sesión como administrador.",
-              });
-              setIsOpen(false);
-            }
+            throw signInError;
           }
-        } else {
-          throw new Error("Contraseña de administrador incorrecta");
+        } else if (signInData.user) {
+          setUser({
+            email: adminCredentials.email,
+            isAdmin: true
+          });
+          toast({
+            title: "¡Bienvenido Administrador!",
+            description: "Has iniciado sesión como administrador.",
+          });
+          setIsOpen(false);
         }
       } else {
         if (isLogin) {
-          const { error } = await supabase.auth.signInWithPassword({
+          const { data, error } = await supabase.auth.signInWithPassword({
             email,
             password,
           });
@@ -94,7 +99,7 @@ export const AuthModal = () => {
           });
           setIsOpen(false);
         } else {
-          const { error } = await supabase.auth.signUp({
+          const { data, error } = await supabase.auth.signUp({
             email,
             password,
           });
