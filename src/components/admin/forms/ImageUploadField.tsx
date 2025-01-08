@@ -3,6 +3,7 @@ import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
 import { Loader2 } from "lucide-react";
 import { supabase } from "@/lib/supabase";
+import { useAuth } from "@/context/AuthContext";
 
 interface ImageUploadFieldProps {
   defaultValue?: string;
@@ -13,31 +14,51 @@ export const ImageUploadField = ({ defaultValue, onImageUploaded }: ImageUploadF
   const [imagePreview, setImagePreview] = useState<string | null>(defaultValue || null);
   const [uploading, setUploading] = useState(false);
   const { toast } = useToast();
+  const { user } = useAuth();
 
   const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     try {
+      if (!user) {
+        toast({
+          title: "Error",
+          description: "Debes estar autenticado para subir imágenes.",
+          variant: "destructive",
+        });
+        return;
+      }
+
       const file = e.target.files?.[0];
       if (!file) return;
 
       setUploading(true);
 
-      // Subir directamente al bucket de storage
+      // Generate a unique filename
       const fileExt = file.name.split('.').pop();
       const fileName = `${Math.random()}.${fileExt}`;
-      const filePath = `${fileName}`;
+
+      console.log('Uploading file:', fileName);
+      console.log('User authenticated:', !!user);
 
       const { error: uploadError, data } = await supabase.storage
         .from('products')
-        .upload(filePath, file);
+        .upload(fileName, file, {
+          cacheControl: '3600',
+          upsert: false
+        });
 
       if (uploadError) {
+        console.error('Upload error:', uploadError);
         throw uploadError;
       }
 
-      // Obtener la URL pública
+      console.log('Upload successful:', data);
+
+      // Get the public URL
       const { data: { publicUrl } } = supabase.storage
         .from('products')
-        .getPublicUrl(filePath);
+        .getPublicUrl(fileName);
+
+      console.log('Public URL:', publicUrl);
 
       setImagePreview(publicUrl);
       onImageUploaded(publicUrl);
