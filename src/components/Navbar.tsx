@@ -71,26 +71,26 @@ const Navbar = () => {
   };
 
   return (
-    <nav className="bg-gradient-to-r from-background via-background/95 to-background/90 backdrop-blur-lg supports-[backdrop-filter]:bg-background/60 sticky top-0 z-50 w-full border-b border-primary/20 shadow-lg shadow-primary/5">
-      <div className="container mx-auto flex h-20 items-center justify-between px-4">
-        <div className="flex items-center gap-6">
+    <nav className="bg-gradient-to-r from-background via-background/95 to-background/90 backdrop-blur-lg supports-[backdrop-filter]:bg-background/60 sticky top-0 z-50 w-full border-b border-primary/20">
+      <div className="container mx-auto flex h-16 items-center justify-between px-4">
+        <div className="flex items-center gap-4">
           <Link to="/" className="flex items-center gap-2 transition-transform hover:scale-105">
             <img 
               src="/lovable-uploads/cdb9f0df-979c-40aa-aadb-9a504a8b0663.png" 
               alt="Licorería 24/7" 
-              className="h-12 drop-shadow-lg"
+              className="h-10 drop-shadow-lg"
             />
           </Link>
 
           <NavigationMenu>
             <NavigationMenuList>
               <NavigationMenuItem>
-                <NavigationMenuTrigger className="bg-primary/10 text-white hover:bg-primary/20 hover:text-white">
+                <NavigationMenuTrigger className="bg-primary/5 text-white hover:bg-primary/10 hover:text-white text-sm">
                   <Menu className="mr-2 h-4 w-4" />
                   Categorías
                 </NavigationMenuTrigger>
                 <NavigationMenuContent>
-                  <ul className="grid w-[400px] gap-3 p-4 md:w-[500px] md:grid-cols-2 lg:w-[600px]">
+                  <ul className="grid w-[400px] gap-2 p-4 md:w-[500px] md:grid-cols-2 lg:w-[600px]">
                     {Object.entries(categoryTitles).map(([key, title]) => (
                       <li key={key}>
                         <NavigationMenuLink asChild>
@@ -110,7 +110,7 @@ const Navbar = () => {
           </NavigationMenu>
         </div>
 
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-3">
           <Popover open={isOpen} onOpenChange={setIsOpen}>
             <PopoverTrigger asChild>
               <Button 
@@ -119,12 +119,12 @@ const Navbar = () => {
                 className="hover:bg-primary/10 transition-colors relative"
                 onClick={() => setIsOpen(true)}
               >
-                <Search className="h-5 w-5 text-white" />
+                <Search className="h-4 w-4 text-white" />
               </Button>
             </PopoverTrigger>
             <PopoverContent className="w-80 p-0" align="end">
               <div className="flex flex-col">
-                <div className="border-b p-4">
+                <div className="border-b p-3">
                   <Input
                     placeholder="Buscar productos..."
                     value={searchTerm}
@@ -136,16 +136,16 @@ const Navbar = () => {
                 <div className="py-2 max-h-[300px] overflow-y-auto">
                   {isLoading ? (
                     <div className="flex items-center justify-center py-4">
-                      <Loader2 className="h-6 w-6 animate-spin text-primary" />
+                      <Loader2 className="h-5 w-5 animate-spin text-primary" />
                     </div>
                   ) : searchResults && searchResults.length > 0 ? (
                     searchResults.map((product) => (
                       <button
                         key={product.id}
-                        className="w-full px-4 py-2 hover:bg-primary/5 flex items-center gap-3 transition-colors"
+                        className="w-full px-3 py-2 hover:bg-primary/5 flex items-center gap-3 transition-colors"
                         onClick={() => handleProductClick(product)}
                       >
-                        <div className="w-12 h-12 rounded-lg overflow-hidden bg-black/10">
+                        <div className="w-10 h-10 rounded-lg overflow-hidden bg-black/10">
                           <img
                             src={product.image}
                             alt={product.name}
